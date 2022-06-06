@@ -19,22 +19,19 @@ for (i in 1:length(slices)){
 
   #Pull biome grid
   biomes <- ncvar_get(netCDF, "biome")
+  biome_vector <- as.vector(biomes)
 
   #Pull latitude and longitude values
-  lon <- ncvar_get(netCDF, "lon")
+  if (i == 1){lon <- ncvar_get(netCDF, "lon")
   lat <- ncvar_get(netCDF, "lat")
-
-  #Create table of grid squares
   lonlat <- as.matrix(expand.grid(lon,lat))
-
-  #Add biome values to data frame
-  biome_vector <- as.vector(biomes)
-  biome_table <- data.frame(cbind(lonlat,biome_vector))
-  names(biome_table) <- c("lon","lat","biome")
-
-  #Create export filename
-  to_write <- paste0("data/cleaned/", slices[i], ".csv")
+  biome_table <- data.frame(lonlat)
+  names(biome_table) <- c("lon","lat")}
   
-  #Write table, removing NA values
-  write.csv(na.omit(biome_table), to_write, row.names = F)
+  #Add slice to matrix
+  biome_table[,(i + 2)] <- biome_vector
+  colnames(biome_table)[(i + 2)] <- slices[i]
 }
+
+#Write table, removing NA values
+write.csv(na.omit(biome_table), "data/cleaned/RCP6.csv", row.names = F)
