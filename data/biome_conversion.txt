@@ -1,0 +1,28 @@
+1 tropical evergreen broadleaf forest
+2 tropical semi-evergreen broadleaf forest
+3 tropical deciduous broadleaf forest & woodland
+4 temperate deciduous broadleaf forest
+5 temperate evergreen needleleaf forest
+6 warm-temperate evergreen broadleaf & mixed forest
+7 cool mixed forest
+8 cool evergreen needleleaf forest
+9 cool-temperate evergreen needleleaf & mixed forest
+10 cold evergreen needleleaf forest
+11 cold deciduous forest
+12 tropical savanna
+13 tropical xerophytic shrubland
+14 temperate xerophytic shrubland
+15 temperate sclerophyll woodland and shrubland
+16 temperate deciduous broadleaf savanna
+17 temperate evergreen needleleaf open woodland
+18 cold parkland
+19 tropical grassland
+20 temperate grassland
+21 desert
+22 graminoid and forb tundra
+23 low and high shrub tundra
+24 erect dwarf-shrub tundra
+25 prostrate dwarf-shrub tundra
+26 cushion-forb tundra
+27 barren
+28 ice
