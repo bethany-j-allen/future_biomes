@@ -31,3 +31,33 @@ ggplot(data = to_plot, aes(x = midpoints, y = change_counts)) +
   theme_classic()
 
 
+#Split results into latitude bands
+high_lat <- filter(biomes, between(lat, 60, 90))
+high_lat <- rbind(high_lat, filter(biomes, between(lat, -90, -60)))
+
+mid_lat <- filter(biomes, between(lat, 30, 60))
+mid_lat <- rbind(mid_lat, filter(biomes, between(lat, -60, -30)))
+
+low_lat <- filter(biomes, between(lat, -30, 30))
+
+#Count the biome changes between adjacent time slices
+changes_high <- c()
+changes_mid <- c()
+changes_low <- c()
+
+for (j in 1:(length(slices)-1)){
+  changes_high[j] <- length(which(high_lat[,j] != high_lat[,j+1]))
+  changes_mid[j] <- length(which(mid_lat[,j] != mid_lat[,j+1]))
+  changes_low[j] <- length(which(low_lat[,j] != low_lat[,j+1]))
+}
+
+#Add slice midpoints to plot against
+lat_plot <- as.data.frame(cbind(midpoints, changes_high, changes_mid, changes_low))
+lat_plot <- pivot_longer(lat_plot, !midpoints, names_to = "latitude",
+                         names_prefix = "changes_")
+
+#Plot
+ggplot(data = lat_plot, aes(x = midpoints, y = value, group = latitude, colour = latitude)) +
+  geom_line() +
+  xlab("Year") + ylab("Number of grid cell biome transitions") +
+  theme_classic()
