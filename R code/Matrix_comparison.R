@@ -5,6 +5,7 @@ library(tidyverse)
 
 #Read in biome IDs
 biomes <- read.csv("data/cleaned/RCP6.csv")
+conversion <- read.table("data/biome_conversion.txt", sep = ",")
 
 #List columns
 slices <- c("X2000.2019", "X2020.2039", "X2040.2059", "X2060.2079", "X2080.2099",
