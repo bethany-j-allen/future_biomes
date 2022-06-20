@@ -34,4 +34,16 @@ for (i in 1:length(slices)){
 }
 
 #Write table, removing NA values
-write.csv(na.omit(biome_table), "data/cleaned/RCP6.csv", row.names = F)
+biome_table <- na.omit(biome_table)
+write.csv(biome_table, "data/cleaned/RCP6.csv", row.names = F)
+
+#Read in biome conversion
+conversion <- read.table("data/biome_conversion.txt", sep = ",")
+
+#Convert biomes into megabiomes
+megabiome_table <- data.frame()
+megabiome_table <- as.data.frame(lapply(biome_table, function(x) conversion$V3[match(x, conversion$V1)]))
+megabiome_table[,1:2] <- biome_table[,1:2]
+
+#Write table
+write.csv(megabiome_table, "data/cleaned/RCP6_mega.csv", row.names = F)
