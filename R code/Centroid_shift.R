@@ -54,17 +54,30 @@ for (i in 1:28){
 #Convert biomes to megabiomes
 conversion <- read.table("data/biome_conversion.txt", sep = ",")
 conversion <- conversion[, c(1,3)]
-biome_ranges$biome <- as.numeric(biome_ranges$biome)
-biome_ranges <- left_join(biome_ranges, conversion, by = c("biome" = "V1"))
 
 #Add column names
 colnames(biome_ranges) <- c("biome", "slice", "hemisphere", "lon_max", "lon_mid", "lon_min",
+                            "lat_max", "lat_mid", "lat_min")
+
+#Add megabiome column
+biome_ranges$biome <- as.numeric(biome_ranges$biome)
+biome_ranges <- left_join(biome_ranges, conversion, by = c("biome" = "V1"))
+colnames(biome_ranges) <- c("biome", "slice", "hemisphere", "lon_max", "lon_mid", "lon_min",
                             "lat_max", "lat_mid", "lat_min", "megabiome")
 
-one_biome <- filter(biome_ranges, megabiome == "A")
+one_biome <- filter(biome_ranges, biome == "1")
+
+one_biome$slice <- as.numeric(one_biome$slice)
+one_biome$lon_max <- as.numeric(one_biome$lon_max)
+one_biome$lon_mid <- as.numeric(one_biome$lon_mid)
+one_biome$lon_min <- as.numeric(one_biome$lon_min)
+one_biome$lat_max <- as.numeric(one_biome$lat_max)
+one_biome$lat_mid <- as.numeric(one_biome$lat_mid)
+one_biome$lat_min <- as.numeric(one_biome$lat_min)
 
 ggplot(data = one_biome) +
-  geom_line(aes(x = megabiome, y = lat_mid)) +
-  geom_errorbar(aes(x = slice, ymax = lat_max, ymin = lat_min)) +
+  geom_ribbon(aes(x = slice, ymin = lat_min, ymax = lat_max, 
+                  group = hemisphere), alpha = 0.5) +
+  geom_line(aes(x = slice, y = lat_mid, group = hemisphere)) +
   xlab("Year") + ylab("Latitudinal range of biome") +
   theme_classic()
