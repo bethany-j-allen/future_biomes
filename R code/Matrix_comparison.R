@@ -15,8 +15,7 @@ slices <- c("X2000.2019", "X2020.2039", "X2040.2059", "X2060.2079", "X2080.2099"
             "X2400.2419", "X2420.2439", "X2440.2459", "X2460.2479", "X2480.2499")
 
 #Count the biome changes between adjacent time slices
-change_counts <- c()
-mega_counts <- c()
+change_counts <- c(); mega_counts <- c()
 
 for (i in 1:(length(slices)-1)){
   change_counts[i] <- length(which(biomes[,i+2] != biomes[,i+3]))
@@ -55,12 +54,8 @@ low_lat <- filter(biomes, between(lat, -30, 30))
 low_lat_m <- filter(megabiomes, between(lat, -30, 30))
 
 #Count the biome changes between adjacent time slices
-changes_high <- c()
-changes_mid <- c()
-changes_low <- c()
-mega_high <- c()
-mega_mid <- c()
-mega_low <- c()
+changes_high <- c(); changes_mid <- c(); changes_low <- c()
+mega_high <- c(); mega_mid <- c(); mega_low <- c()
 
 for (j in 1:(length(slices)-1)){
   changes_high[j] <- length(which(high_lat[,j+2] != high_lat[,j+3]))
