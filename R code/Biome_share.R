@@ -50,6 +50,23 @@ for (i in 1:length(slices)){
 #Convert results to data frames and clean column names
 change_counts <- as.data.frame(change_counts)
 colnames(change_counts) <- c("biome", midpoints)
+change_counts <- pivot_longer(change_counts, !biome)
 
 mega_counts <- as.data.frame(mega_counts)
 colnames(mega_counts) <- c("megabiome", midpoints)
+mega_counts <- pivot_longer(mega_counts, !megabiome)
+
+change_counts$biome <- as.factor(change_counts$biome)
+change_counts$value <- as.numeric(change_counts$value)
+mega_counts$value <- as.numeric(mega_counts$value)
+
+#Plot results
+ggplot(data = change_counts, aes(x = name, y = value, fill = biome)) +
+  geom_bar(stat = "identity") +
+  xlab("Year") + ylab("Proportion of grid cells") +
+  theme_classic()
+
+ggplot(data = mega_counts, aes(x = name, y = value, fill = megabiome)) +
+  geom_bar(stat = "identity") +
+  xlab("Year") + ylab("Proportion of grid cells") +
+  theme_classic()
