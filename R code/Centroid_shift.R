@@ -81,7 +81,7 @@ ggplot(data = biome_ranges) +
                  size = 2, alpha = 0.5)) +
   geom_hline(aes(yintercept = 0), colour = "black") +
   facet_wrap( ~ biome, ncol = 7) +
-  xlab("Year") + ylab("Latitudinal range of biome") +
+  xlab("Longitudinal midpoint of biome") + ylab("Latitudinal midpoint of biome") +
   theme_classic()
 
 
@@ -149,5 +149,5 @@ ggplot(data = megabiome_ranges) +
                  size = 2, alpha = 0.5)) +
   geom_hline(aes(yintercept = 0), colour = "black") +
   facet_wrap( ~ megabiome, ncol = 3) +
-  xlab("Year") + ylab("Latitudinal range of biome") +
+  xlab("Longitudinal midpoint of biome") + ylab("Latitudinal range of biome") +
   theme_classic()
