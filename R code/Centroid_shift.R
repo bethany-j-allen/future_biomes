@@ -75,6 +75,15 @@ ggplot(data = biome_ranges) +
   xlab("Year") + ylab("Latitudinal range of biome") +
   theme_classic()
 
+#Plot centroid movement
+ggplot(data = biome_ranges) +
+  geom_point(aes(x = lon_mid, y = lat_mid, group = hemisphere, col = slice,
+                 size = 2, alpha = 0.5)) +
+  geom_hline(aes(yintercept = 0), colour = "black") +
+  facet_wrap( ~ biome, ncol = 7) +
+  xlab("Year") + ylab("Latitudinal range of biome") +
+  theme_classic()
+
 
 #Determine the megabiome centroids through time
 megabiome_ranges <- data.frame()
@@ -130,6 +139,15 @@ ggplot(data = megabiome_ranges) +
   geom_ribbon(aes(x = slice, ymin = lat_min, ymax = lat_max, 
                   group = hemisphere), alpha = 0.5) +
   geom_line(aes(x = slice, y = lat_mid, group = hemisphere)) +
+  facet_wrap( ~ megabiome, ncol = 3) +
+  xlab("Year") + ylab("Latitudinal range of biome") +
+  theme_classic()
+
+#Plot centroid movement
+ggplot(data = megabiome_ranges) +
+  geom_point(aes(x = lon_mid, y = lat_mid, group = hemisphere, col = slice,
+                 size = 2, alpha = 0.5)) +
+  geom_hline(aes(yintercept = 0), colour = "black") +
   facet_wrap( ~ megabiome, ncol = 3) +
   xlab("Year") + ylab("Latitudinal range of biome") +
   theme_classic()
