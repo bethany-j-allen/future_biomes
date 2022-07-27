@@ -2,6 +2,7 @@
 #Code to extract relevant information from netCDF files
 
 library(ncdf4)
+library(raster)
 
 slices <- c("2000-2019", "2020-2039", "2040-2059", "2060-2079", "2080-2099",
             "2100-2119", "2120-2139", "2140-2159", "2160-2179", "2180-2199",
@@ -17,20 +18,27 @@ for (i in 1:length(slices)){
   netCDF <- nc_open(filename)
   #print(netCDF)
 
+  #Start table with latitude and longitude values, and calculate cell area
+  if (i == 1){
+    lon <- ncvar_get(netCDF, "lon")
+    lat <- ncvar_get(netCDF, "lat")
+    lonlat <- as.matrix(expand.grid(lon,lat))
+    biome_table <- data.frame(lonlat)
+  
+    one_raster <- raster("data/netCDFs/xoazm_2000-2019AD_biome4out.nc")
+    proj4string(one_raster) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")
+    cell_area <- area(one_raster)
+    biome_table <- cbind(biome_table, cell_area@data@values)
+    
+    names(biome_table) <- c("lon","lat", "area_km2")}
+  
   #Pull biome grid
   biomes <- ncvar_get(netCDF, "biome")
   biome_vector <- as.vector(biomes)
-
-  #Pull latitude and longitude values
-  if (i == 1){lon <- ncvar_get(netCDF, "lon")
-  lat <- ncvar_get(netCDF, "lat")
-  lonlat <- as.matrix(expand.grid(lon,lat))
-  biome_table <- data.frame(lonlat)
-  names(biome_table) <- c("lon","lat")}
   
   #Add slice to matrix
-  biome_table[,(i + 2)] <- biome_vector
-  colnames(biome_table)[(i + 2)] <- slices[i]
+  biome_table[,(i + 3)] <- biome_vector
+  colnames(biome_table)[(i + 3)] <- slices[i]
 }
 
 #Write table, removing NA values
@@ -43,7 +51,7 @@ conversion <- read.table("data/biome_conversion.txt", sep = ",")
 #Convert biomes into megabiomes
 megabiome_table <- data.frame()
 megabiome_table <- as.data.frame(lapply(biome_table, function(x) conversion$V3[match(x, conversion$V1)]))
-megabiome_table[,1:2] <- biome_table[,1:2]
+megabiome_table[,1:3] <- biome_table[,1:3]
 
 #Write table
 write.csv(megabiome_table, "data/cleaned/RCP6_mega.csv", row.names = F)
