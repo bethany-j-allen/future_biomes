@@ -18,8 +18,8 @@ slices <- c("X2000.2019", "X2020.2039", "X2040.2059", "X2060.2079", "X2080.2099"
 change_counts <- c(); mega_counts <- c()
 
 for (i in 1:(length(slices)-1)){
-  change_counts[i] <- length(which(biomes[,i+2] != biomes[,i+3]))
-  mega_counts[i] <- length(which(megabiomes[,i+2] != megabiomes[,i+3]))
+  change_counts[i] <- length(which(biomes[,i+3] != biomes[,i+4]))
+  mega_counts[i] <- length(which(megabiomes[,i+3] != megabiomes[,i+4]))
 }
 
 #Add slice midpoints to plot against
@@ -58,12 +58,12 @@ changes_high <- c(); changes_mid <- c(); changes_low <- c()
 mega_high <- c(); mega_mid <- c(); mega_low <- c()
 
 for (j in 1:(length(slices)-1)){
-  changes_high[j] <- length(which(high_lat[,j+2] != high_lat[,j+3]))
-  changes_mid[j] <- length(which(mid_lat[,j+2] != mid_lat[,j+3]))
-  changes_low[j] <- length(which(low_lat[,j+2] != low_lat[,j+3]))
-  mega_high[j] <- length(which(high_lat_m[,j+2] != high_lat_m[,j+3]))
-  mega_mid[j] <- length(which(mid_lat_m[,j+2] != mid_lat_m[,j+3]))
-  mega_low[j] <- length(which(low_lat_m[,j+2] != low_lat_m[,j+3]))
+  changes_high[j] <- length(which(high_lat[,j+3] != high_lat[,j+4]))
+  changes_mid[j] <- length(which(mid_lat[,j+3] != mid_lat[,j+4]))
+  changes_low[j] <- length(which(low_lat[,j+3] != low_lat[,j+4]))
+  mega_high[j] <- length(which(high_lat_m[,j+3] != high_lat_m[,j+4]))
+  mega_mid[j] <- length(which(mid_lat_m[,j+3] != mid_lat_m[,j+4]))
+  mega_low[j] <- length(which(low_lat_m[,j+3] != low_lat_m[,j+4]))
 }
 
 #Add slice midpoints to plot against

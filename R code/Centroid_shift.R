@@ -22,7 +22,7 @@ biome_ranges <- data.frame()
 for (i in 1:28){
   for (j in 1:(length(slices))){
     #Filter to cells containing i biome in j time slice
-    biome_cells <- biomes[(which(biomes[,j+2] == i)),c(1, 2, (j+2))]
+    biome_cells <- biomes[(which(biomes[,j+3] == i)),c(1:3, (j+3))]
     
     #Split into hemispheres
     n_hem_cells <- filter(biome_cells, lat > 0)
@@ -91,7 +91,7 @@ megabiome_ranges <- data.frame()
 for (k in 1:9){
   for (l in 1:(length(slices))){
     #Filter to cells containing i biome in j time slice
-    megabiome_cells <- megabiomes[(which(megabiomes[,l+2] == megabiome_tags[k])),c(1, 2, (l+2))]
+    megabiome_cells <- megabiomes[(which(megabiomes[,l+3] == megabiome_tags[k])),c(1:3, (l+3))]
     
     #Split into hemispheres
     n_hem_m_cells <- filter(megabiome_cells, lat > 0)

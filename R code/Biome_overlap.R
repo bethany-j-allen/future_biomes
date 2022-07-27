@@ -26,12 +26,12 @@ overlap_prop <- data.frame(); overlap_prop_m <- data.frame()
 
 for (j in 1:length(biome_tags)){
   for (i in 1:(length(slices)-1)){
-    biome_cells <- biomes[which(biomes[,i+3] == j),]
-    overlap_prop[j,i] <- (length(which(biome_cells[,i+2] == j)))/nrow(biome_cells)
+    biome_cells <- biomes[which(biomes[,i+4] == j),]
+    overlap_prop[j,i] <- (length(which(biome_cells[,i+3] == j)))/nrow(biome_cells)
     
     if(j < 10){
-      megabiome_cells <- megabiomes[which(megabiomes[,i+3] == megabiome_tags[j]),]
-      overlap_prop_m[j,i] <- (length(which(megabiome_cells[,i+2] == megabiome_tags[j])))/nrow(megabiome_cells)
+      megabiome_cells <- megabiomes[which(megabiomes[,i+4] == megabiome_tags[j]),]
+      overlap_prop_m[j,i] <- (length(which(megabiome_cells[,i+3] == megabiome_tags[j])))/nrow(megabiome_cells)
       }
     }
 }
