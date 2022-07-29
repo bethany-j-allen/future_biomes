@@ -16,16 +16,21 @@ slices <- c("X2000.2019", "X2020.2039", "X2040.2059", "X2060.2079", "X2080.2099"
 
 #Count the biome changes between adjacent time slices
 change_counts <- c(); mega_counts <- c()
+change_area <- c(); mega_area <- c()
 
 for (i in 1:(length(slices)-1)){
   change_counts[i] <- length(which(biomes[,i+3] != biomes[,i+4]))
   mega_counts[i] <- length(which(megabiomes[,i+3] != megabiomes[,i+4]))
+  change_area[i] <- sum(biomes[which(biomes[,i+3] != biomes[,i+4]), 3])
+  mega_area[i] <- sum(biomes[which(megabiomes[,i+3] != megabiomes[,i+4]), 3])
 }
 
 #Add slice midpoints to plot against
 midpoints <- seq(from = 2020, to = 2480, by = 20)
 to_plot_biomes <- as.data.frame(cbind(midpoints, change_counts))
 to_plot_mega <- as.data.frame(cbind(midpoints, mega_counts))
+to_plot_biomes_a <- as.data.frame(cbind(midpoints, change_area))
+to_plot_mega_a <- as.data.frame(cbind(midpoints, mega_area))
 
 #Plot
 ggplot(data = to_plot_biomes, aes(x = midpoints, y = change_counts)) +
@@ -36,6 +41,16 @@ ggplot(data = to_plot_biomes, aes(x = midpoints, y = change_counts)) +
 ggplot(data = to_plot_mega, aes(x = midpoints, y = mega_counts)) +
   geom_line() +
   xlab("Year") + ylab("Number of grid cell megabiome transitions") +
+  theme_classic()
+
+ggplot(data = to_plot_biomes_a, aes(x = midpoints, y = change_area)) +
+  geom_line() +
+  xlab("Year") + ylab("Total area of biome transitions (km2)") +
+  theme_classic()
+
+ggplot(data = to_plot_mega_a, aes(x = midpoints, y = mega_area)) +
+  geom_line() +
+  xlab("Year") + ylab("Total area of megabiome transitions (km2)") +
   theme_classic()
 
 
@@ -56,6 +71,9 @@ low_lat_m <- filter(megabiomes, between(lat, -30, 30))
 #Count the biome changes between adjacent time slices
 changes_high <- c(); changes_mid <- c(); changes_low <- c()
 mega_high <- c(); mega_mid <- c(); mega_low <- c()
+changes_high_a <- c(); changes_mid_a <- c(); changes_low_a <- c()
+mega_high_a <- c(); mega_mid_a <- c(); mega_low_a <- c()
+
 
 for (j in 1:(length(slices)-1)){
   changes_high[j] <- length(which(high_lat[,j+3] != high_lat[,j+4]))
@@ -64,6 +82,12 @@ for (j in 1:(length(slices)-1)){
   mega_high[j] <- length(which(high_lat_m[,j+3] != high_lat_m[,j+4]))
   mega_mid[j] <- length(which(mid_lat_m[,j+3] != mid_lat_m[,j+4]))
   mega_low[j] <- length(which(low_lat_m[,j+3] != low_lat_m[,j+4]))
+  changes_high_a[j] <- sum(high_lat[which(high_lat[,j+3] != high_lat[,j+4]), 3])
+  changes_mid_a[j] <- sum(mid_lat[which(mid_lat[,j+3] != mid_lat[,j+4]), 3])
+  changes_low_a[j] <- sum(low_lat[which(low_lat[,j+3] != low_lat[,j+4]), 3])
+  mega_high_a[j] <- sum(high_lat_m[which(high_lat_m[,j+3] != high_lat_m[,j+4]), 3])
+  mega_mid_a[j] <- sum(mid_lat_m[which(mid_lat_m[,j+3] != mid_lat_m[,j+4]), 3])
+  mega_low_a[j] <- sum(low_lat_m[which(low_lat_m[,j+3] != low_lat_m[,j+4]), 3])
 }
 
 #Add slice midpoints to plot against
@@ -75,6 +99,14 @@ lat_plot_m <- as.data.frame(cbind(midpoints, mega_high, mega_mid, mega_low))
 lat_plot_m <- pivot_longer(lat_plot_m, !midpoints, names_to = "latitude",
                          names_prefix = "mega_")
 
+lat_plot_a <- as.data.frame(cbind(midpoints, changes_high_a, changes_mid_a, changes_low_a))
+lat_plot_a <- pivot_longer(lat_plot_a, !midpoints, names_to = "latitude",
+                         names_prefix = "changes_")
+
+lat_plot_m_a <- as.data.frame(cbind(midpoints, mega_high_a, mega_mid_a, mega_low_a))
+lat_plot_m_a <- pivot_longer(lat_plot_m_a, !midpoints, names_to = "latitude",
+                           names_prefix = "mega_")
+
 #Plot
 ggplot(data = lat_plot, aes(x = midpoints, y = value, group = latitude, colour = latitude)) +
   geom_line() +
@@ -84,4 +116,14 @@ ggplot(data = lat_plot, aes(x = midpoints, y = value, group = latitude, colour =
 ggplot(data = lat_plot_m, aes(x = midpoints, y = value, group = latitude, colour = latitude)) +
   geom_line() +
   xlab("Year") + ylab("Number of grid cell megabiome transitions") +
+  theme_classic()
+
+ggplot(data = lat_plot_a, aes(x = midpoints, y = value, group = latitude, colour = latitude)) +
+  geom_line() +
+  xlab("Year") + ylab("Total area of biome transitions (km2)") +
+  theme_classic()
+
+ggplot(data = lat_plot_m_a, aes(x = midpoints, y = value, group = latitude, colour = latitude)) +
+  geom_line() +
+  xlab("Year") + ylab("Total area of megabiome transitions (km2)") +
   theme_classic()
