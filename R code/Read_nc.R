@@ -13,7 +13,7 @@ slices <- c("2000-2019", "2020-2039", "2040-2059", "2060-2079", "2080-2099",
 for (i in 1:length(slices)){
   #Create filename
   filename <- paste0("data/netCDFs/xoazm_", slices[i], "AD_biome4out.nc")
-  
+
   #Read in netCDF
   netCDF <- nc_open(filename)
   #print(netCDF)
@@ -24,18 +24,18 @@ for (i in 1:length(slices)){
     lat <- ncvar_get(netCDF, "lat")
     lonlat <- as.matrix(expand.grid(lon,lat))
     biome_table <- data.frame(lonlat)
-  
+
     one_raster <- raster("data/netCDFs/xoazm_2000-2019AD_biome4out.nc")
-    proj4string(one_raster) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")
+    proj4string(one_raster) <- CRS("+proj=longlat")
     cell_area <- area(one_raster)
     biome_table <- cbind(biome_table, cell_area@data@values)
-    
+
     names(biome_table) <- c("lon","lat", "area_km2")}
-  
+
   #Pull biome grid
   biomes <- ncvar_get(netCDF, "biome")
   biome_vector <- as.vector(biomes)
-  
+
   #Add slice to matrix
   biome_table[,(i + 3)] <- biome_vector
   colnames(biome_table)[(i + 3)] <- slices[i]
