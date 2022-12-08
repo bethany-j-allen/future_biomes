@@ -1,6 +1,6 @@
 #Bethany Allen   26th July 2022
 #Code to calculate the amount of overlap of biome cells between time slices
-#  (number of cells which were not occupied by same biome in last slice)
+#  (number of cells which were occupied by same biome in last slice)
 
 library(tidyverse)
 
@@ -23,15 +23,22 @@ megabiome_tags <- c("A", "B", "C", "D", "E", "F", "G", "H", "I")
 
 #Count the biome changes between adjacent time slices
 overlap_prop <- data.frame(); overlap_prop_m <- data.frame()
+overlap_area <- data.frame(); overlap_area_m <- data.frame()
 
 for (j in 1:length(biome_tags)){
   for (i in 1:(length(slices)-1)){
     biome_cells <- biomes[which(biomes[,i+4] == j),]
-    overlap_prop[j,i] <- (length(which(biome_cells[,i+3] == j)))/nrow(biome_cells)
+    biome_area <- sum(biome_cells$area_km2)
+    biome_overlap <- biome_cells[which(biome_cells[,i+3] == j),]
+    overlap_prop[j,i] <- nrow(biome_overlap)/nrow(biome_cells)
+    overlap_area[j,i] <- (sum(biome_overlap$area_km2))/biome_area
     
     if(j < 10){
       megabiome_cells <- megabiomes[which(megabiomes[,i+4] == megabiome_tags[j]),]
-      overlap_prop_m[j,i] <- (length(which(megabiome_cells[,i+3] == megabiome_tags[j])))/nrow(megabiome_cells)
+      megabiome_area <- sum(megabiome_cells$area_km2)
+      megabiome_overlap <- megabiome_cells[which(megabiome_cells[,i+3] == megabiome_tags[j]),]
+      overlap_prop_m[j,i] <- nrow(megabiome_overlap)/nrow(megabiome_cells)
+      overlap_area_m[j,i] <- (sum(megabiome_overlap$area_km2))/megabiome_area
       }
     }
 }
@@ -47,6 +54,16 @@ overlap_prop_m <- pivot_longer(overlap_prop_m, !megabiome)
 
 overlap_prop$biome <- as.factor(overlap_prop$biome)
 
+colnames(overlap_area) <- midpoints
+overlap_area$biome <- biome_tags
+overlap_area <- pivot_longer(overlap_area, !biome)
+
+colnames(overlap_area_m) <- midpoints
+overlap_area_m$megabiome <- megabiome_tags
+overlap_area_m <- pivot_longer(overlap_area_m, !megabiome)
+
+overlap_area$biome <- as.factor(overlap_area$biome)
+
 #Plot results
 ggplot(data = overlap_prop, aes(x = name, y = value, group = 1)) +
   geom_line() +
@@ -58,4 +75,16 @@ ggplot(data = overlap_prop_m, aes(x = name, y = value, group = 1)) +
   geom_line() +
   facet_wrap( ~ megabiome, ncol = 3) +
   xlab("Year") + ylab("Proportion of grid cells") +
+  theme_classic()
+
+ggplot(data = overlap_area, aes(x = name, y = value, group = 1)) +
+  geom_line() +
+  facet_wrap( ~ biome, ncol = 7) +
+  xlab("Year") + ylab("Proportion of biome area") +
+  theme_classic()
+
+ggplot(data = overlap_area_m, aes(x = name, y = value, group = 1)) +
+  geom_line() +
+  facet_wrap( ~ megabiome, ncol = 3) +
+  xlab("Year") + ylab("Proportion of megabiome area") +
   theme_classic()
