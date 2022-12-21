@@ -8,6 +8,8 @@ library(tidyverse)
 biomes <- read.csv("data/cleaned/RCP6.csv")
 megabiomes <- read.csv("data/cleaned/RCP6_mega.csv")
 
+#Read in biome conversion
+conversion <- read.table("data/biome_conversion.txt", sep = ",")
 
 #List columns
 slices <- c("X2000.2019", "X2020.2039", "X2040.2059", "X2060.2079", "X2080.2099",
@@ -52,8 +54,6 @@ colnames(overlap_prop_m) <- midpoints
 overlap_prop_m$megabiome <- megabiome_tags
 overlap_prop_m <- pivot_longer(overlap_prop_m, !megabiome)
 
-overlap_prop$biome <- as.factor(overlap_prop$biome)
-
 colnames(overlap_area) <- midpoints
 overlap_area$biome <- biome_tags
 overlap_area <- pivot_longer(overlap_area, !biome)
@@ -62,29 +62,34 @@ colnames(overlap_area_m) <- midpoints
 overlap_area_m$megabiome <- megabiome_tags
 overlap_area_m <- pivot_longer(overlap_area_m, !megabiome)
 
-overlap_area$biome <- as.factor(overlap_area$biome)
+#Convert biome numbers to labels
+overlap_prop <- left_join(overlap_prop, conversion, by = c("biome" = "V1"))
+overlap_area <- left_join(overlap_area, conversion, by = c("biome" = "V1"))
+conversion <- distinct(conversion, V3, .keep_all = T)
+overlap_prop_m <- left_join(overlap_prop_m, conversion, by = c("megabiome" = "V3"))
+overlap_area_m <- left_join(overlap_area_m, conversion, by = c("megabiome" = "V3"))
 
 #Plot results
 ggplot(data = overlap_prop, aes(x = name, y = value, group = 1)) +
   geom_line() +
-  facet_wrap( ~ biome, ncol = 7) +
+  facet_wrap( ~ V2, ncol = 7) +
   xlab("Year") + ylab("Proportion of grid cells") +
   theme_classic()
 
 ggplot(data = overlap_prop_m, aes(x = name, y = value, group = 1)) +
   geom_line() +
-  facet_wrap( ~ megabiome, ncol = 3) +
+  facet_wrap( ~ V4, ncol = 3) +
   xlab("Year") + ylab("Proportion of grid cells") +
   theme_classic()
 
 ggplot(data = overlap_area, aes(x = name, y = value, group = 1)) +
   geom_line() +
-  facet_wrap( ~ biome, ncol = 7) +
+  facet_wrap( ~ V2, ncol = 7) +
   xlab("Year") + ylab("Proportion of biome area") +
   theme_classic()
 
 ggplot(data = overlap_area_m, aes(x = name, y = value, group = 1)) +
   geom_line() +
-  facet_wrap( ~ megabiome, ncol = 3) +
+  facet_wrap( ~ V4, ncol = 3) +
   xlab("Year") + ylab("Proportion of megabiome area") +
   theme_classic()
