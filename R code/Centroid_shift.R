@@ -2,10 +2,14 @@
 #Code to calculate the movement of biome centroids through time
 
 library(tidyverse)
+library(geosphere)
 
 #Read in biome IDs
 biomes <- read.csv("data/cleaned/RCP6.csv")
 megabiomes <- read.csv("data/cleaned/RCP6_mega.csv")
+
+#Read in biome conversion
+conversion <- read.table("data/biome_conversion.txt", sep = ",")
 
 #List columns
 slices <- c("X2000.2019", "X2020.2039", "X2040.2059", "X2060.2079", "X2080.2099",
@@ -66,12 +70,15 @@ biome_ranges$lat_max <- as.numeric(biome_ranges$lat_max)
 biome_ranges$lat_mid <- as.numeric(biome_ranges$lat_mid)
 biome_ranges$lat_min <- as.numeric(biome_ranges$lat_min)
 
+#Convert biome numbers to labels
+biome_ranges <- left_join(biome_ranges, conversion, by = c("biome" = "V1"))
+
 #Plot latitudes
 ggplot(data = biome_ranges) +
   geom_ribbon(aes(x = slice, ymin = lat_min, ymax = lat_max, 
                   group = hemisphere), alpha = 0.5) +
   geom_line(aes(x = slice, y = lat_mid, group = hemisphere)) +
-  facet_wrap( ~ biome, ncol = 7) +
+  facet_wrap( ~ V2, ncol = 7) +
   xlab("Year") + ylab("Latitudinal range of biome") +
   theme_classic()
 
@@ -80,8 +87,36 @@ ggplot(data = biome_ranges) +
   geom_point(aes(x = lon_mid, y = lat_mid, group = hemisphere, col = slice,
                  size = 2, alpha = 0.5)) +
   geom_hline(aes(yintercept = 0), colour = "black") +
-  facet_wrap( ~ biome, ncol = 7) +
+  facet_wrap( ~ V2, ncol = 7) +
   xlab("Longitudinal midpoint of biome") + ylab("Latitudinal midpoint of biome") +
+  theme_classic()
+
+centroid_shifts <- c()
+
+for (m in 1:28){
+  n_hem_ranges <- filter(biome_ranges, biome == m) %>% filter(hemisphere == "N")
+  s_hem_ranges <- filter(biome_ranges, biome == m) %>% filter(hemisphere == "S")
+  if (nrow(n_hem_ranges) > 0){
+    centroid_shifts <- rbind(centroid_shifts, cbind(m, seq(from = 2020, to = 2480, by = 20),
+                                         "N", distGeo(n_hem_ranges[,c(5,8)])[1:24]))}
+  if (nrow(s_hem_ranges) > 0){
+    centroid_shifts <- rbind(centroid_shifts, cbind(m, seq(from = 2020, to = 2480, by = 20),
+                                         "S", distGeo(s_hem_ranges[,c(5,8)])[1:24]))}
+}
+
+centroid_shifts <- as.data.frame(centroid_shifts)
+colnames(centroid_shifts) <- c("biome", "year", "hemisphere", "distance")
+centroid_shifts$biome <- as.numeric(centroid_shifts$biome)
+centroid_shifts$distance <- as.numeric(centroid_shifts$distance)
+
+centroid_shifts <- left_join(centroid_shifts, conversion, by = c("biome" = "V1"))
+
+#Plot distance moved by centroid
+ggplot(data = centroid_shifts, aes(x = year, y = distance, group = hemisphere,
+                                   col = hemisphere)) +
+  geom_line() +
+  facet_wrap( ~ V2, ncol = 7) +
+  xlab("Year") + ylab("Distance moved by centroid (km2)") +
   theme_classic()
 
 
@@ -134,12 +169,16 @@ megabiome_ranges$lat_max <- as.numeric(megabiome_ranges$lat_max)
 megabiome_ranges$lat_mid <- as.numeric(megabiome_ranges$lat_mid)
 megabiome_ranges$lat_min <- as.numeric(megabiome_ranges$lat_min)
 
+#Convert biome numbers to labels
+conversion <- distinct(conversion, V3, .keep_all = T)
+megabiome_ranges <- left_join(megabiome_ranges, conversion, by = c("megabiome" = "V3"))
+
 #Plot latitudes
 ggplot(data = megabiome_ranges) +
   geom_ribbon(aes(x = slice, ymin = lat_min, ymax = lat_max, 
                   group = hemisphere), alpha = 0.5) +
   geom_line(aes(x = slice, y = lat_mid, group = hemisphere)) +
-  facet_wrap( ~ megabiome, ncol = 3) +
+  facet_wrap( ~ V4, ncol = 3) +
   xlab("Year") + ylab("Latitudinal range of biome") +
   theme_classic()
 
@@ -148,6 +187,40 @@ ggplot(data = megabiome_ranges) +
   geom_point(aes(x = lon_mid, y = lat_mid, group = hemisphere, col = slice,
                  size = 2, alpha = 0.5)) +
   geom_hline(aes(yintercept = 0), colour = "black") +
-  facet_wrap( ~ megabiome, ncol = 3) +
-  xlab("Longitudinal midpoint of biome") + ylab("Latitudinal range of biome") +
+  facet_wrap( ~ V4, ncol = 3) +
+  xlab("Longitudinal midpoint of biome") + ylab("Latitudinal midpoint of biome") +
+  theme_classic()
+
+mega_centroid_shifts <- c()
+
+for (m in 1:28){
+  n_hem_ranges_m <- filter(megabiome_ranges, megabiome == megabiome_tags[m]) %>%
+    filter(hemisphere == "N")
+  s_hem_ranges_m <- filter(megabiome_ranges, megabiome == megabiome_tags[m]) %>%
+    filter(hemisphere == "S")
+  if (nrow(n_hem_ranges_m) > 0){
+    mega_centroid_shifts <- rbind(mega_centroid_shifts,
+                                  cbind(megabiome_tags[m],
+                                        seq(from = 2020, to = 2480, by = 20),
+                                  "N", distGeo(n_hem_ranges_m[,c(5,8)])[1:24]))}
+  if (nrow(s_hem_ranges_m) > 0){
+    mega_centroid_shifts <- rbind(mega_centroid_shifts,
+                                  cbind(megabiome_tags[m],
+                                        seq(from = 2020, to = 2480, by = 20),
+                                  "S", distGeo(s_hem_ranges_m[,c(5,8)])[1:24]))}
+}
+
+mega_centroid_shifts <- as.data.frame(mega_centroid_shifts)
+colnames(mega_centroid_shifts) <- c("megabiome", "year", "hemisphere", "distance")
+mega_centroid_shifts$distance <- as.numeric(mega_centroid_shifts$distance)
+
+mega_centroid_shifts <- left_join(mega_centroid_shifts, conversion,
+                                  by = c("megabiome" = "V3"))
+
+#Plot distance moved by centroid
+ggplot(data = mega_centroid_shifts, aes(x = year, y = distance, group = hemisphere,
+                                   col = hemisphere)) +
+  geom_line() +
+  facet_wrap( ~ V4, ncol = 3) +
+  xlab("Year") + ylab("Distance moved by centroid (km2)") +
   theme_classic()
