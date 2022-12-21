@@ -24,7 +24,7 @@ one_slice <- select(biomes, lon, lat, area_km2, slice = X2000.2019)
 one_slice <- left_join(one_slice, conversion, by = c("slice" = "V1"))
 
 ggplot(data = one_slice, aes(x = lon, y = lat, group = V2, col = V2)) +
-  geom_point() +
+  geom_point(size = 0.4) +
   xlab("Longitude") + ylab("Latitude") +
   theme_classic()
 
@@ -32,9 +32,25 @@ one_slice_m <- select(megabiomes, lon, lat, area_km2, slice = X2000.2019)
 one_slice_m <- left_join(one_slice_m, conversion, by = c("slice" = "V3"))
 
 ggplot(data = one_slice_m, aes(x = lon, y = lat, group = V4, col = V4)) +
-  geom_point() +
+  geom_point(size = 0.4) +
   xlab("Longitude") + ylab("Latitude") +
   theme_classic()
 
 #Plot difference between slice and the present
+biome_change <- select(biomes, lon, lat, area_km2, present = X2000.2019,
+                    slice = X2020.2039)
+biome_change$same <- biome_change$present == biome_change$slice
 
+ggplot(data = biome_change, aes(x = lon, y = lat, group = same, col = same)) +
+  geom_point(size = 0.4) +
+  xlab("Longitude") + ylab("Latitude") +
+  theme_classic()
+
+megabiome_change <- select(megabiomes, lon, lat, area_km2, present = X2000.2019,
+                       slice = X2020.2039)
+megabiome_change$same <- megabiome_change$present == megabiome_change$slice
+
+ggplot(data = megabiome_change, aes(x = lon, y = lat, group = same, col = same)) +
+  geom_point(size = 0.4) +
+  xlab("Longitude") + ylab("Latitude") +
+  theme_classic()
