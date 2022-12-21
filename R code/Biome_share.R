@@ -104,22 +104,22 @@ mega_area <- left_join(mega_area, conversion, by = c("megabiome" = "V3"))
 
 #Plot results
 ggplot(data = change_counts, aes(x = name, y = value, fill = V2)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", col = "black") +
   xlab("Year") + ylab("Proportion of grid cells") +
   theme_classic()
 
 ggplot(data = mega_counts, aes(x = name, y = value, fill = V4)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", col = "black") +
   xlab("Year") + ylab("Proportion of grid cells") +
   theme_classic()
 
 ggplot(data = change_area, aes(x = name, y = value, fill = V2)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", col = "black") +
   xlab("Year") + ylab("Proportion of terrestrial area") +
   theme_classic()
 
 ggplot(data = mega_area, aes(x = name, y = value, fill = V4)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", col = "black") +
   xlab("Year") + ylab("Proportion of terrestrial area") +
   theme_classic()
 ggsave("Terrestrial area.pdf", width = 10, height = 6, dpi = 600)
