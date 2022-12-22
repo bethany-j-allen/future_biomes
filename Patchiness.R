@@ -32,6 +32,8 @@ for (i in 1:length(slices)){
   biomes <- ncvar_get(netCDF, "biome")
   biome_raster <- raster(biomes)
   extent(biome_raster) <- c(0, 360, -90, 90)
+  
+  #Delineate patches
   patches <- get_patches(biome_raster, directions = 8)
   patches <- patches[[1]]
   names(patches) <- gsub("class_", "", names(patches))
@@ -45,10 +47,12 @@ for (i in 1:length(slices)){
 
 }
 
+#Clean table
 colnames(patch_table) <- midpoints
 patch_table$labels <- conversion$V2
 patch_table <- pivot_longer(patch_table, -labels)
 
+#Plot
 ggplot(data = patch_table, aes(x = name, y = value,
                                 group = labels, col = labels)) +
   geom_line() +
