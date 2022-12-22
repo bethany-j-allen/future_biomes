@@ -39,11 +39,18 @@ for (i in 1:length(slices)){
   for (j in 1:28){
     if (j %in% names(patches)){
       patch_count <- length(raster::unique(patches[[paste0(j)]]))
-      patch_table[j,i] <- patch_count } else { patch_table[j,i] <- 0 }
+      patch_table[j,i] <- patch_count } else
+        { patch_table[j,i] <- 0 }
   }
 
 }
 
 colnames(patch_table) <- midpoints
 patch_table$labels <- conversion$V2
+patch_table <- pivot_longer(patch_table, -labels)
 
+ggplot(data = patch_table, aes(x = name, y = value,
+                                group = labels, col = labels)) +
+  geom_line() +
+  xlab("Year") + ylab("Number of patches") +
+  theme_classic()
