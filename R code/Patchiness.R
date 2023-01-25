@@ -32,17 +32,29 @@ for (i in 1:length(slices)){
   biomes <- ncvar_get(netCDF, "biome")
   biome_raster <- raster(biomes)
   extent(biome_raster) <- c(0, 360, -90, 90)
+  
+  #Delineate patches
   patches <- get_patches(biome_raster, directions = 8)
   patches <- patches[[1]]
   names(patches) <- gsub("class_", "", names(patches))
   
   for (j in 1:28){
     if (j %in% names(patches)){
-      patch_count <- length(raster::unique(patches[[j]]))
-      patch_table[j,i] <- patch_count } else { patch_table[j,i] <- 0 }
+      patch_count <- length(raster::unique(patches[[paste0(j)]]))
+      patch_table[j,i] <- patch_count } else
+        { patch_table[j,i] <- 0 }
   }
 
 }
 
-colnames(patch_count) <- slices
-rownames(patch_count) <- c(seq(1, 17, 1), seq(19, 28, 1))
+#Clean table
+colnames(patch_table) <- midpoints
+patch_table$labels <- conversion$V2
+patch_table <- pivot_longer(patch_table, -labels)
+
+#Plot
+ggplot(data = patch_table, aes(x = name, y = value,
+                                group = labels, col = labels)) +
+  geom_line() +
+  xlab("Year") + ylab("Number of patches") +
+  theme_classic()
