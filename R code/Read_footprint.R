@@ -19,3 +19,7 @@ anthromes_df <- filter(anthromes_df, !is.na(value))
 urban_area <- filter(anthromes_df, value == 11 | value == 12)
 human_codes <- c(11, 12, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43)
 human_area <- filter(anthromes_df, value %in% human_codes)
+
+#Load biome raster and split into cells of same size as HYDE dataset
+biomes <- raster("data/netCDFs/RCP6/xoazm_2000-2019AD_biome4out.nc")
+smaller_cells <- disaggregate(biomes, fact = c(6, 6))
