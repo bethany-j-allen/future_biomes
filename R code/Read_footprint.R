@@ -7,19 +7,38 @@ library(raster)
 #Load HYDE 3.2 anthromes for 2017
 anthromes_raster <- raster("data/anthromes2017AD.asc")
 
-#Extract values from raster
-anthromes_df <- as.data.frame(cbind(coordinates(anthromes_raster),
-                             value = raster::values(anthromes_raster)))
-head(anthromes_df)
+#Load biome raster
+biomes <- raster("data/netCDFs/RCP6/xoazm_2000-2019AD_biome4out.nc",
+                 varname = "biome")
 
-#Reomve NAs
+#Split biome raster into cells of same size as anthromes
+smaller_cells <- disaggregate(biomes, fact = c(6, 6))
+
+#Resize anthrome raster to have same extent as biomes
+anthromes_resized <- setExtent(anthromes_raster, c(-180, 180, -90, 90))
+
+#Extract values from both rasters
+anthromes_df <- as.data.frame(cbind(coordinates(anthromes_resized),
+                                    value = raster::values(anthromes_resized)))
+head(anthromes_df)
+biomes_df <- as.data.frame(cbind(coordinates(smaller_cells),
+                                    value = raster::values(smaller_cells)))
+head(biomes_df)
+
+#Remove NAs
 anthromes_df <- filter(anthromes_df, !is.na(value))
+biomes_df <- filter(biomes_df, !is.na(value))
+
+#Swivel round longitude values on biome dataframe
+biomes_df$x <- ifelse((biomes_df$x > 180), (biomes_df$x - 360), biomes_df$x)
+
+#Combine datasets
+combined_df <- left_join(anthromes_df, biomes_df, by = c("x", "y"),
+                  suffix = c("anthrome", "biome"))
+
+#Something weird going on with biome values?
 
 #Split into urban and all human regions
 urban_area <- filter(anthromes_df, value == 11 | value == 12)
 human_codes <- c(11, 12, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43)
 human_area <- filter(anthromes_df, value %in% human_codes)
-
-#Load biome raster and split into cells of same size as HYDE dataset
-biomes <- raster("data/netCDFs/RCP6/xoazm_2000-2019AD_biome4out.nc")
-smaller_cells <- disaggregate(biomes, fact = c(6, 6))
