@@ -1,8 +1,8 @@
 #Bethany Allen   6th June 2022
 #Code to extract relevant information from netCDF files
 
-library(ncdf4)
 library(raster)
+library(units)
 
 slices <- c("2000-2019", "2020-2039", "2040-2059", "2060-2079", "2080-2099",
             "2100-2119", "2120-2139", "2140-2159", "2160-2179", "2180-2199",
@@ -15,39 +15,68 @@ for (i in 1:length(slices)){
   filename <- paste0("data/netCDFs/RCP6/xoazm_", slices[i], "AD_biome4out.nc")
 
   #Read in netCDF
-  netCDF <- nc_open(filename)
+  netCDF <- raster(filename, varname = "biome")
   #print(netCDF)
 
-  #Start table with latitude and longitude values, and calculate cell area
+  #Start table with latitude and longitude values
   if (i == 1){
-    lon <- ncvar_get(netCDF, "lon")
-    lat <- ncvar_get(netCDF, "lat")
-    lonlat <- as.matrix(expand.grid(lon,lat))
-    biome_table <- data.frame(lonlat)
+    biome_table <- data.frame(coordinates(netCDF))
+    names(biome_table) <- c("lon", "lat")
+    
+    #Swivel round longitude values
+    biome_table$lon <- ifelse((biome_table$lon > 180), (biome_table$lon - 360),
+                            biome_table$lon)
+    
+    #Calculate cell areas
+    #Convert to cell limits
+    biome_table$lowerlon <- biome_table$lon - 0.25
+    biome_table$upperlon <- biome_table$lon + 0.25
+    biome_table$lowerlat <- biome_table$lat - 0.25
+    biome_table$upperlat <- biome_table$lat + 0.25
+    
+    #Code uses the equation of Santini et al. (2010)
+    # S = R^2(λ2-λ1)(sinφ2-sinφ1)
+    # where
+    # S = surface area of a latitude-longitude grid cell
+    # R = radius of the Earth
+    # λ1, λ2 = longitude bounds of the cell, in radians
+    # φ1, φ2 = latitude bounds of the cell, in radians
+    
+    #Mean radius of the Earth
+    R = 6371008.8
+    
+    #Convert edges to radians
+    biome_table$lowerlon <- as_units(biome_table$lowerlon, "degrees")
+    biome_table$lowerlon <- set_units(biome_table$lowerlon, "radians")
+    
+    biome_table$upperlon <- as_units(biome_table$upperlon, "degrees")
+    biome_table$upperlon <- set_units(biome_table$upperlon, "radians")
+    
+    biome_table$lowerlat <- as_units(biome_table$lowerlat, "degrees")
+    biome_table$lowerlat <- set_units(biome_table$lowerlat, "radians")
+    
+    biome_table$upperlat <- as_units(biome_table$upperlat, "degrees")
+    biome_table$upperlat <- set_units(biome_table$upperlat, "radians")
+    
+    #Calculate area in square metres
+    biome_table$area_km2 = (R^2) * (biome_table$upperlon - biome_table$lowerlon) *
+      (sin(biome_table$upperlat) - sin(biome_table$lowerlat))
+    
+    #Remove units and convert to square kilometres
+    units(biome_table$area_km2) <- NULL
+    biome_table$area_km2 <- biome_table$area_km2 / 1000000
+    
+    #Remove perimeter columns
+    biome_table <- biome_table[,c("lon", "lat", "area_km2")]
+  }
 
-    one_raster <- raster("data/netCDFs/RCP6/xoazm_2000-2019AD_biome4out.nc")
-    proj4string(one_raster) <- CRS("+proj=longlat")
-    cell_area <- area(one_raster)
-    biome_table <- cbind(biome_table, cell_area@data@values)
-
-    names(biome_table) <- c("lon","lat", "area_km2")}
-
-  #Pull biome grid
-  biomes <- ncvar_get(netCDF, "biome")
-  biome_vector <- as.vector(biomes)
-
-  #Add slice to matrix
-  biome_table[,(i + 3)] <- biome_vector
+  #Add biome data for time slice to matrix
+  biome_table[,(i + 3)] <- raster::values(netCDF)
   colnames(biome_table)[(i + 3)] <- slices[i]
 }
 
 #Remove NA values
 biome_table <- na.omit(biome_table)
-
-#Swivel round longitude values
-for (j in 1:nrow(biome_table)) {
-  if (biome_table[j,1] > 180) {biome_table[j,1] <- biome_table[j,1] - 360}
-}
 
 #Save table
 write.csv(biome_table, "data/cleaned/RCP6.csv", row.names = F)
