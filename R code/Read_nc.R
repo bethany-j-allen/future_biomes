@@ -78,7 +78,7 @@ for (i in 1:length(slices)){
 biome_table <- na.omit(biome_table)
 
 #Save table
-write.csv(biome_table, "data/cleaned/RCP6.csv", row.names = F)
+write.csv(biome_table, "data/cleaned/RCP6_all.csv", row.names = F)
 
 #Read in biome conversion
 conversion <- read.table("data/biome_conversion.txt", sep = ",")
@@ -89,4 +89,4 @@ megabiome_table <- as.data.frame(lapply(biome_table, function(x) conversion$V3[m
 megabiome_table[,1:3] <- biome_table[,1:3]
 
 #Write table
-write.csv(megabiome_table, "data/cleaned/RCP6_mega.csv", row.names = F)
+write.csv(megabiome_table, "data/cleaned/RCP6_mega_all.csv", row.names = F)
