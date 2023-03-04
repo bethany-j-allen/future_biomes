@@ -1,5 +1,5 @@
 #Bethany Allen   6th June 2022
-#Code to extract relevant information from netCDF files
+#Code to extract relevant information from netCDF files and calculate cell area
 
 library(raster)
 library(units)
@@ -17,15 +17,14 @@ for (i in 1:length(slices)){
   #Read in netCDF
   netCDF <- raster(filename, varname = "biome")
   #print(netCDF)
+  
+  #Rotate longitude values from 0 to 360 to -180 to 180
+  netCDF <- rotate(netCDF)
 
   #Start table with latitude and longitude values
   if (i == 1){
     biome_table <- data.frame(coordinates(netCDF))
     names(biome_table) <- c("lon", "lat")
-    
-    #Swivel round longitude values
-    biome_table$lon <- ifelse((biome_table$lon > 180), (biome_table$lon - 360),
-                            biome_table$lon)
     
     #Calculate cell areas
     #Convert to cell limits

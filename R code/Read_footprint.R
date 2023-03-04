@@ -11,11 +11,14 @@ anthromes_raster <- raster("data/anthromes2017AD.asc")
 biomes <- raster("data/netCDFs/RCP6/xoazm_2000-2019AD_biome4out.nc",
                  varname = "biome")
 
+#Rotate longitude values from 0 to 360 to -180 to 180
+biomes <- rotate(biomes)
+
 #Split biome raster into cells of same size as anthromes
 smaller_cells <- disaggregate(biomes, fact = c(6, 6))
 
 #Resize anthrome raster to have same extent as biomes
-anthromes_resized <- setExtent(anthromes_raster, c(-180, 180, -90, 90))
+anthromes_resized <- setExtent(anthromes_raster, smaller_cells, snap = TRUE)
 
 #Extract values from both rasters
 anthromes_df <- as.data.frame(cbind(coordinates(anthromes_resized),
@@ -36,7 +39,8 @@ biomes_df$x <- ifelse((biomes_df$x > 180), (biomes_df$x - 360), biomes_df$x)
 combined_df <- left_join(anthromes_df, biomes_df, by = c("x", "y"),
                   suffix = c("anthrome", "biome"))
 
-#Something weird going on with biome values?
+test <- filter(combined_df, is.na(valuebiome))
+
 
 #Split into urban and all human regions
 urban_area <- filter(anthromes_df, value == 11 | value == 12)
