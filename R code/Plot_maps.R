@@ -4,8 +4,8 @@
 library(tidyverse)
 
 #Read in biome IDs
-biomes <- read.csv("data/cleaned/RCP6.csv")
-megabiomes <- read.csv("data/cleaned/RCP6_mega.csv")
+biomes <- read.csv("data/cleaned/RCP6_all.csv")
+megabiomes <- read.csv("data/cleaned/RCP6_mega_all.csv")
 
 #Read in biome conversion
 conversion <- read.table("data/biome_conversion.txt", sep = ",")
