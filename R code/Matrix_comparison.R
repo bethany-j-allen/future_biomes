@@ -10,6 +10,7 @@ slices <- c("X2000.2019", "X2020.2039", "X2040.2059", "X2060.2079", "X2080.2099"
             "X2200.2219", "X2220.2239", "X2240.2259", "X2260.2279", "X2280.2299",
             "X2300.2319", "X2320.2339", "X2340.2359", "X2360.2379", "X2380.2399",
             "X2400.2419", "X2420.2439", "X2440.2459", "X2460.2479", "X2480.2499")
+midpoints <- seq(from = 2020, to = 2480, by = 20)
 
 #List filenames
 filenames <- c("RCP2.6_all", "RCP2.6_no_urban", "RCP2.6_no_human",
@@ -46,7 +47,6 @@ for (k in 1:length(filenames)){
   }
 
   #Add slice midpoints to plot against
-  midpoints <- seq(from = 2020, to = 2480, by = 20)
   to_plot_biomes <- rbind(to_plot_biomes,
                           as.data.frame(cbind(midpoints, change_area,
                                               filenames[k])))
@@ -67,6 +67,7 @@ ggplot(data = to_plot_biomes, aes(x = midpoints, y = change_area,
                                       "green2", "green4", "green3")) +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing biome transitions between slices") +
   theme_classic()
+ggsave("figures/Biome transitions between slices.pdf", width = 10, height = 6, dpi = 600)
 
 ggplot(data = to_plot_mega, aes(x = midpoints, y = mega_area,
                                   group = V3, col = V3)) +
@@ -76,64 +77,145 @@ ggplot(data = to_plot_mega, aes(x = midpoints, y = mega_area,
                                       "green2", "green4", "green3")) +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing megabiome transitions between slices") +
   theme_classic()
+ggsave("figures/Megaobiome transitions between slices.pdf", width = 10, height = 6, dpi = 600)
 
 
 #Read in one RCP
-biomes <- read.csv(paste0("data/cleaned/RCP6_all.csv"))
-megabiomes <- read.csv(paste0("data/cleaned/RCP6_mega_all.csv"))
+RCP <- "RCP6"
+biomes_all <- read.csv(paste0("data/cleaned/", RCP, "_all.csv"))
+biomes_no_urban <- read.csv(paste0("data/cleaned/", RCP, "_no_urban.csv"))
+biomes_no_human <- read.csv(paste0("data/cleaned/", RCP, "_no_human.csv"))
+megabiomes_all <- read.csv(paste0("data/cleaned/", RCP, "_mega_all.csv"))
+megabiomes_no_urban <- read.csv(paste0("data/cleaned/", RCP, "_mega_no_urban.csv"))
+megabiomes_no_human <- read.csv(paste0("data/cleaned/", RCP, "_mega_no_human.csv"))
 
 #Split results into latitude bands
-high_lat <- filter(biomes, between(lat, 60, 90))
-high_lat <- rbind(high_lat, filter(biomes, between(lat, -90, -60)))
-high_lat_m <- filter(megabiomes, between(lat, 60, 90))
-high_lat_m <- rbind(high_lat_m, filter(megabiomes, between(lat, -90, -60)))
+high_lat_all <- filter(biomes_all, between(lat, 60, 90))
+high_lat_all <- rbind(high_lat_all, filter(biomes_all, between(lat, -90, -60)))
+high_lat_no_urban <- filter(biomes_no_urban, between(lat, 60, 90))
+high_lat_no_urban <- rbind(high_lat_no_urban, filter(biomes_no_urban, between(lat, -90, -60)))
+high_lat_no_human <- filter(biomes_no_human, between(lat, 60, 90))
+high_lat_no_human <- rbind(high_lat_no_human, filter(biomes_no_human, between(lat, -90, -60)))
 
-mid_lat <- filter(biomes, between(lat, 30, 60))
-mid_lat <- rbind(mid_lat, filter(biomes, between(lat, -60, -30)))
-mid_lat_m <- filter(megabiomes, between(lat, 30, 60))
-mid_lat_m <- rbind(mid_lat_m, filter(megabiomes, between(lat, -60, -30)))
+high_lat_m_all <- filter(megabiomes_all, between(lat, 60, 90))
+high_lat_m_all <- rbind(high_lat_m_all, filter(megabiomes_all, between(lat, -90, -60)))
+high_lat_m_no_urban <- filter(megabiomes_no_urban, between(lat, 60, 90))
+high_lat_m_no_urban <- rbind(high_lat_m_no_urban, filter(megabiomes_no_urban, between(lat, -90, -60)))
+high_lat_m_no_human <- filter(megabiomes_no_human, between(lat, 60, 90))
+high_lat_m_no_human <- rbind(high_lat_m_no_human, filter(megabiomes_no_human, between(lat, -90, -60)))
 
-low_lat <- filter(biomes, between(lat, -30, 30))
-low_lat_m <- filter(megabiomes, between(lat, -30, 30))
+mid_lat_all <- filter(biomes_all, between(lat, 30, 60))
+mid_lat_all <- rbind(mid_lat_all, filter(biomes_all, between(lat, -60, -30)))
+mid_lat_no_urban <- filter(biomes_no_urban, between(lat, 30, 60))
+mid_lat_no_urban <- rbind(mid_lat_no_urban, filter(biomes_no_urban, between(lat, -60, -30)))
+mid_lat_no_human <- filter(biomes_no_human, between(lat, 30, 60))
+mid_lat_no_human <- rbind(mid_lat_no_human, filter(biomes_no_human, between(lat, -60, -30)))
 
-#Calculate area for each latitude band
-high_lat_area <- sum(high_lat$area_km2)
-mid_lat_area <- sum(mid_lat$area_km2)
-low_lat_area <- sum(low_lat$area_km2)
+mid_lat_m_all <- filter(megabiomes_all, between(lat, 30, 60))
+mid_lat_m_all <- rbind(mid_lat_m_all, filter(megabiomes_all, between(lat, -60, -30)))
+mid_lat_m_no_urban <- filter(megabiomes_no_urban, between(lat, 30, 60))
+mid_lat_m_no_urban <- rbind(mid_lat_m_no_urban, filter(megabiomes_no_urban, between(lat, -60, -30)))
+mid_lat_m_no_human <- filter(megabiomes_no_human, between(lat, 30, 60))
+mid_lat_m_no_human <- rbind(mid_lat_m_no_human, filter(megabiomes_no_human, between(lat, -60, -30)))
+
+low_lat_all <- filter(biomes_all, between(lat, -30, 30))
+low_lat_no_urban <- filter(biomes_no_urban, between(lat, -30, 30))
+low_lat_no_human <- filter(biomes_no_human, between(lat, -30, 30))
+
+low_lat_m_all <- filter(megabiomes_all, between(lat, -30, 30))
+low_lat_m_no_urban <- filter(megabiomes_no_urban, between(lat, -30, 30))
+low_lat_m_no_human <- filter(megabiomes_no_human, between(lat, -30, 30))
+
+#Calculate area for each latitude band (low versus high res)
+high_lat_area_lr <- sum(high_lat_all$area_km2)
+mid_lat_area_lr <- sum(mid_lat_all$area_km2)
+low_lat_area_lr <- sum(low_lat_all$area_km2)
+
+high_lat_area_hr <- sum(high_lat_no_urban$area_km2)
+mid_lat_area_hr <- sum(mid_lat_no_urban$area_km2)
+low_lat_area_hr <- sum(low_lat_no_urban$area_km2)
+
+#Remove NAs from no_human and no_urban
+high_lat_no_urban <- na.omit(high_lat_no_urban)
+high_lat_no_human <- na.omit(high_lat_no_human)
+high_lat_m_no_urban <- na.omit(high_lat_m_no_urban)
+high_lat_m_no_human <- na.omit(high_lat_m_no_human)
+
+mid_lat_no_urban <- na.omit(mid_lat_no_urban)
+mid_lat_no_human <- na.omit(mid_lat_no_human)
+mid_lat_m_no_urban <- na.omit(mid_lat_m_no_urban)
+mid_lat_m_no_human <- na.omit(mid_lat_m_no_human)
+
+low_lat_no_urban <- na.omit(low_lat_no_urban)
+low_lat_no_human <- na.omit(low_lat_no_human)
+low_lat_m_no_urban <- na.omit(low_lat_m_no_urban)
+low_lat_m_no_human <- na.omit(low_lat_m_no_human)
 
 #Count the biome changes between adjacent time slices
-changes_high <- c(); changes_mid <- c(); changes_low <- c()
+all_high <- c(); all_mid <- c(); all_low <- c()
+no_urban_high <- c(); no_urban_mid <- c(); no_urban_low <- c()
+no_human_high <- c(); no_human_mid <- c(); no_human_low <- c()
 mega_high <- c(); mega_mid <- c(); mega_low <- c()
+mega_no_urban_high <- c(); mega_no_urban_mid <- c(); mega_no_urban_low <- c()
+mega_no_human_high <- c(); mega_no_human_mid <- c(); mega_no_human_low <- c()
 
 for (j in 1:(length(slices)-1)){
-  changes_high[j] <- sum(high_lat[which(high_lat[,j+3] != high_lat[,j+4]), 3]) / high_lat_area
-  changes_mid[j] <- sum(mid_lat[which(mid_lat[,j+3] != mid_lat[,j+4]), 3]) / mid_lat_area
-  changes_low[j] <- sum(low_lat[which(low_lat[,j+3] != low_lat[,j+4]), 3]) / low_lat_area
-  mega_high[j] <- sum(high_lat_m[which(high_lat_m[,j+3] != high_lat_m[,j+4]), 3]) / high_lat_area
-  mega_mid[j] <- sum(mid_lat_m[which(mid_lat_m[,j+3] != mid_lat_m[,j+4]), 3]) / mid_lat_area
-  mega_low[j] <- sum(low_lat_m[which(low_lat_m[,j+3] != low_lat_m[,j+4]), 3]) / low_lat_area
+  all_high[j] <- sum(high_lat_all[which(high_lat_all[,j+3] != high_lat_all[,j+4]), 3]) / high_lat_area_lr
+  no_urban_high[j] <- sum(high_lat_no_urban[which(high_lat_no_urban[,j+3] != high_lat_no_urban[,j+4]), 3]) / high_lat_area_hr
+  no_human_high[j] <- sum(high_lat_no_human[which(high_lat_no_human[,j+3] != high_lat_no_human[,j+4]), 3]) / high_lat_area_hr
+  
+  all_mid[j] <- sum(mid_lat_all[which(mid_lat_all[,j+3] != mid_lat_all[,j+4]), 3]) / mid_lat_area_lr
+  no_urban_mid[j] <- sum(mid_lat_no_urban[which(mid_lat_no_urban[,j+3] != mid_lat_no_urban[,j+4]), 3]) / mid_lat_area_hr
+  no_human_mid[j] <- sum(mid_lat_no_human[which(mid_lat_no_human[,j+3] != mid_lat_no_human[,j+4]), 3]) / mid_lat_area_hr
+  
+  all_low[j] <- sum(low_lat_all[which(low_lat_all[,j+3] != low_lat_all[,j+4]), 3]) / low_lat_area_lr
+  no_urban_low[j] <- sum(low_lat_no_urban[which(low_lat_no_urban[,j+3] != low_lat_no_urban[,j+4]), 3]) / low_lat_area_hr
+  no_human_low[j] <- sum(low_lat_no_human[which(low_lat_no_human[,j+3] != low_lat_no_human[,j+4]), 3]) / low_lat_area_hr
+  
+  mega_high[j] <- sum(high_lat_m_all[which(high_lat_m_all[,j+3] != high_lat_m_all[,j+4]), 3]) / high_lat_area_lr
+  mega_no_urban_high[j] <- sum(high_lat_m_no_urban[which(high_lat_m_no_urban[,j+3] != high_lat_m_no_urban[,j+4]), 3]) / high_lat_area_hr
+  mega_no_human_high[j] <- sum(high_lat_m_no_human[which(high_lat_m_no_human[,j+3] != high_lat_m_no_human[,j+4]), 3]) / high_lat_area_hr
+  
+  mega_mid[j] <- sum(mid_lat_m_all[which(mid_lat_m_all[,j+3] != mid_lat_m_all[,j+4]), 3]) / mid_lat_area_lr
+  mega_no_urban_mid[j] <- sum(mid_lat_m_no_urban[which(mid_lat_m_no_urban[,j+3] != mid_lat_m_no_urban[,j+4]), 3]) / mid_lat_area_hr
+  mega_no_human_mid[j] <- sum(mid_lat_m_no_human[which(mid_lat_m_no_human[,j+3] != mid_lat_m_no_human[,j+4]), 3]) / mid_lat_area_hr
+  
+  mega_low[j] <- sum(low_lat_m_all[which(low_lat_m_all[,j+3] != low_lat_m_all[,j+4]), 3]) / low_lat_area_lr
+  mega_no_urban_low[j] <- sum(low_lat_m_no_urban[which(low_lat_m_no_urban[,j+3] != low_lat_m_no_urban[,j+4]), 3]) / low_lat_area_hr
+  mega_no_human_low[j] <- sum(low_lat_m_no_human[which(low_lat_m_no_human[,j+3] != low_lat_m_no_human[,j+4]), 3]) / low_lat_area_hr
 }
 
 #Add slice midpoints to plot against
-lat_plot <- as.data.frame(cbind(midpoints, changes_high, changes_mid, changes_low))
-lat_plot <- pivot_longer(lat_plot, !midpoints, names_to = "latitude",
-                         names_prefix = "changes_")
+lat_plot <- as.data.frame(cbind(midpoints, all_high, all_mid, all_low,
+                                no_urban_high, no_urban_mid, no_urban_low,
+                                no_human_high, no_human_mid, no_human_low))
+lat_plot <- pivot_longer(lat_plot, !midpoints, names_to = "latitude")
 
-lat_plot_m <- as.data.frame(cbind(midpoints, mega_high, mega_mid, mega_low))
+
+lat_plot_m <- as.data.frame(cbind(midpoints, mega_high, mega_mid, mega_low,
+                                  mega_no_urban_high, mega_no_urban_mid, mega_no_urban_low,
+                                  mega_no_human_high, mega_no_human_mid, mega_no_human_low))
 lat_plot_m <- pivot_longer(lat_plot_m, !midpoints, names_to = "latitude",
                          names_prefix = "mega_")
 
 #Plot
 ggplot(data = lat_plot, aes(x = midpoints, y = value, group = latitude, colour = latitude)) +
   geom_line() +
+  scale_colour_manual(values = c("firebrick1", "cadetblue1", "green2",
+                                 "firebrick4", "cadetblue4", "green4",
+                                 "firebrick3", "cadetblue3", "green3")) +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing biome transitions between slices") +
   theme_classic()
+ggsave(paste0("figures/Biome transitions between slices by latitude ", RCP, ".pdf"), width = 10, height = 6, dpi = 600)
 
 ggplot(data = lat_plot_m, aes(x = midpoints, y = value, group = latitude, colour = latitude)) +
   geom_line() +
+  scale_colour_manual(values = c("firebrick1", "cadetblue1", "green2",
+                                 "firebrick4", "cadetblue4", "green4",
+                                 "firebrick3", "cadetblue3", "green3")) +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing megabiome transitions between slices") +
   theme_classic()
-ggsave("Transitions by latitude.pdf", width = 10, height = 6, dpi = 600)
+ggsave(paste0("figures/Megabiome transitions between slices by latitude ", RCP, ".pdf"), width = 10, height = 6, dpi = 600)
 
 
 #How much change compared to the present day?
@@ -180,6 +262,7 @@ ggplot(data = to_plot_biomes, aes(x = midpoints, y = change_area,
                                       "green2", "green4", "green3")) +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing biome transitions compared to 2000-2020") +
   theme_classic()
+ggsave("figures/Biome transitions from present.pdf", width = 10, height = 6, dpi = 600)
 
 ggplot(data = to_plot_mega, aes(x = midpoints, y = mega_area,
                                   group = V3, col = V3)) +
@@ -189,61 +272,141 @@ ggplot(data = to_plot_mega, aes(x = midpoints, y = mega_area,
                                       "green2", "green4", "green3")) +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing megabiome transitions compared to 2000-2020") +
   theme_classic()
-
+ggsave("figures/Megabiome transitions between slices.pdf", width = 10, height = 6, dpi = 600)
 
 #Read in one RCP
-biomes <- read.csv(paste0("data/cleaned/RCP6_all.csv"))
-megabiomes <- read.csv(paste0("data/cleaned/RCP6_mega_all.csv"))
+RCP <- "RCP6"
+biomes_all <- read.csv(paste0("data/cleaned/", RCP, "_all.csv"))
+biomes_no_urban <- read.csv(paste0("data/cleaned/", RCP, "_no_urban.csv"))
+biomes_no_human <- read.csv(paste0("data/cleaned/", RCP, "_no_human.csv"))
+megabiomes_all <- read.csv(paste0("data/cleaned/", RCP, "_mega_all.csv"))
+megabiomes_no_urban <- read.csv(paste0("data/cleaned/", RCP, "_mega_no_urban.csv"))
+megabiomes_no_human <- read.csv(paste0("data/cleaned/", RCP, "_mega_no_human.csv"))
 
 #Split results into latitude bands
-high_lat <- filter(biomes, between(lat, 60, 90))
-high_lat <- rbind(high_lat, filter(biomes, between(lat, -90, -60)))
-high_lat_m <- filter(megabiomes, between(lat, 60, 90))
-high_lat_m <- rbind(high_lat_m, filter(megabiomes, between(lat, -90, -60)))
+high_lat_all <- filter(biomes_all, between(lat, 60, 90))
+high_lat_all <- rbind(high_lat_all, filter(biomes_all, between(lat, -90, -60)))
+high_lat_no_urban <- filter(biomes_no_urban, between(lat, 60, 90))
+high_lat_no_urban <- rbind(high_lat_no_urban, filter(biomes_no_urban, between(lat, -90, -60)))
+high_lat_no_human <- filter(biomes_no_human, between(lat, 60, 90))
+high_lat_no_human <- rbind(high_lat_no_human, filter(biomes_no_human, between(lat, -90, -60)))
 
-mid_lat <- filter(biomes, between(lat, 30, 60))
-mid_lat <- rbind(mid_lat, filter(biomes, between(lat, -60, -30)))
-mid_lat_m <- filter(megabiomes, between(lat, 30, 60))
-mid_lat_m <- rbind(mid_lat_m, filter(megabiomes, between(lat, -60, -30)))
+high_lat_m_all <- filter(megabiomes_all, between(lat, 60, 90))
+high_lat_m_all <- rbind(high_lat_m_all, filter(megabiomes_all, between(lat, -90, -60)))
+high_lat_m_no_urban <- filter(megabiomes_no_urban, between(lat, 60, 90))
+high_lat_m_no_urban <- rbind(high_lat_m_no_urban, filter(megabiomes_no_urban, between(lat, -90, -60)))
+high_lat_m_no_human <- filter(megabiomes_no_human, between(lat, 60, 90))
+high_lat_m_no_human <- rbind(high_lat_m_no_human, filter(megabiomes_no_human, between(lat, -90, -60)))
 
-low_lat <- filter(biomes, between(lat, -30, 30))
-low_lat_m <- filter(megabiomes, between(lat, -30, 30))
+mid_lat_all <- filter(biomes_all, between(lat, 30, 60))
+mid_lat_all <- rbind(mid_lat_all, filter(biomes_all, between(lat, -60, -30)))
+mid_lat_no_urban <- filter(biomes_no_urban, between(lat, 30, 60))
+mid_lat_no_urban <- rbind(mid_lat_no_urban, filter(biomes_no_urban, between(lat, -60, -30)))
+mid_lat_no_human <- filter(biomes_no_human, between(lat, 30, 60))
+mid_lat_no_human <- rbind(mid_lat_no_human, filter(biomes_no_human, between(lat, -60, -30)))
 
-#Calculate area for each latitude band
-high_lat_area <- sum(high_lat$area_km2)
-mid_lat_area <- sum(mid_lat$area_km2)
-low_lat_area <- sum(low_lat$area_km2)
+mid_lat_m_all <- filter(megabiomes_all, between(lat, 30, 60))
+mid_lat_m_all <- rbind(mid_lat_m_all, filter(megabiomes_all, between(lat, -60, -30)))
+mid_lat_m_no_urban <- filter(megabiomes_no_urban, between(lat, 30, 60))
+mid_lat_m_no_urban <- rbind(mid_lat_m_no_urban, filter(megabiomes_no_urban, between(lat, -60, -30)))
+mid_lat_m_no_human <- filter(megabiomes_no_human, between(lat, 30, 60))
+mid_lat_m_no_human <- rbind(mid_lat_m_no_human, filter(megabiomes_no_human, between(lat, -60, -30)))
+
+low_lat_all <- filter(biomes_all, between(lat, -30, 30))
+low_lat_no_urban <- filter(biomes_no_urban, between(lat, -30, 30))
+low_lat_no_human <- filter(biomes_no_human, between(lat, -30, 30))
+
+low_lat_m_all <- filter(megabiomes_all, between(lat, -30, 30))
+low_lat_m_no_urban <- filter(megabiomes_no_urban, between(lat, -30, 30))
+low_lat_m_no_human <- filter(megabiomes_no_human, between(lat, -30, 30))
+
+#Calculate area for each latitude band (low versus high res)
+high_lat_area_lr <- sum(high_lat_all$area_km2)
+mid_lat_area_lr <- sum(mid_lat_all$area_km2)
+low_lat_area_lr <- sum(low_lat_all$area_km2)
+
+high_lat_area_hr <- sum(high_lat_no_urban$area_km2)
+mid_lat_area_hr <- sum(mid_lat_no_urban$area_km2)
+low_lat_area_hr <- sum(low_lat_no_urban$area_km2)
+
+#Remove NAs from no_human and no_urban
+high_lat_no_urban <- na.omit(high_lat_no_urban)
+high_lat_no_human <- na.omit(high_lat_no_human)
+high_lat_m_no_urban <- na.omit(high_lat_m_no_urban)
+high_lat_m_no_human <- na.omit(high_lat_m_no_human)
+
+mid_lat_no_urban <- na.omit(mid_lat_no_urban)
+mid_lat_no_human <- na.omit(mid_lat_no_human)
+mid_lat_m_no_urban <- na.omit(mid_lat_m_no_urban)
+mid_lat_m_no_human <- na.omit(mid_lat_m_no_human)
+
+low_lat_no_urban <- na.omit(low_lat_no_urban)
+low_lat_no_human <- na.omit(low_lat_no_human)
+low_lat_m_no_urban <- na.omit(low_lat_m_no_urban)
+low_lat_m_no_human <- na.omit(low_lat_m_no_human)
 
 #Count the biome changes between adjacent time slices
-changes_high <- c(); changes_mid <- c(); changes_low <- c()
+all_high <- c(); all_mid <- c(); all_low <- c()
+no_urban_high <- c(); no_urban_mid <- c(); no_urban_low <- c()
+no_human_high <- c(); no_human_mid <- c(); no_human_low <- c()
 mega_high <- c(); mega_mid <- c(); mega_low <- c()
+mega_no_urban_high <- c(); mega_no_urban_mid <- c(); mega_no_urban_low <- c()
+mega_no_human_high <- c(); mega_no_human_mid <- c(); mega_no_human_low <- c()
 
 for (j in 1:(length(slices)-1)){
-  changes_high[j] <- sum(high_lat[which(high_lat[,4] != high_lat[,j+4]), 3]) / high_lat_area
-  changes_mid[j] <- sum(mid_lat[which(mid_lat[,4] != mid_lat[,j+4]), 3]) / mid_lat_area
-  changes_low[j] <- sum(low_lat[which(low_lat[,4] != low_lat[,j+4]), 3]) / low_lat_area
-  mega_high[j] <- sum(high_lat_m[which(high_lat_m[,4] != high_lat_m[,j+4]), 3]) / high_lat_area
-  mega_mid[j] <- sum(mid_lat_m[which(mid_lat_m[,4] != mid_lat_m[,j+4]), 3]) / mid_lat_area
-  mega_low[j] <- sum(low_lat_m[which(low_lat_m[,4] != low_lat_m[,j+4]), 3]) / low_lat_area
+  all_high[j] <- sum(high_lat_all[which(high_lat_all[,4] != high_lat_all[,j+4]), 3]) / high_lat_area_lr
+  no_urban_high[j] <- sum(high_lat_no_urban[which(high_lat_no_urban[,4] != high_lat_no_urban[,j+4]), 3]) / high_lat_area_hr
+  no_human_high[j] <- sum(high_lat_no_human[which(high_lat_no_human[,4] != high_lat_no_human[,j+4]), 3]) / high_lat_area_hr
+  
+  all_mid[j] <- sum(mid_lat_all[which(mid_lat_all[,4] != mid_lat_all[,j+4]), 3]) / mid_lat_area_lr
+  no_urban_mid[j] <- sum(mid_lat_no_urban[which(mid_lat_no_urban[,4] != mid_lat_no_urban[,j+4]), 3]) / mid_lat_area_hr
+  no_human_mid[j] <- sum(mid_lat_no_human[which(mid_lat_no_human[,4] != mid_lat_no_human[,j+4]), 3]) / mid_lat_area_hr
+  
+  all_low[j] <- sum(low_lat_all[which(low_lat_all[,4] != low_lat_all[,j+4]), 3]) / low_lat_area_lr
+  no_urban_low[j] <- sum(low_lat_no_urban[which(low_lat_no_urban[,4] != low_lat_no_urban[,j+4]), 3]) / low_lat_area_hr
+  no_human_low[j] <- sum(low_lat_no_human[which(low_lat_no_human[,4] != low_lat_no_human[,j+4]), 3]) / low_lat_area_hr
+  
+  mega_high[j] <- sum(high_lat_m_all[which(high_lat_m_all[,4] != high_lat_m_all[,j+4]), 3]) / high_lat_area_lr
+  mega_no_urban_high[j] <- sum(high_lat_m_no_urban[which(high_lat_m_no_urban[,4] != high_lat_m_no_urban[,j+4]), 3]) / high_lat_area_hr
+  mega_no_human_high[j] <- sum(high_lat_m_no_human[which(high_lat_m_no_human[,4] != high_lat_m_no_human[,j+4]), 3]) / high_lat_area_hr
+  
+  mega_mid[j] <- sum(mid_lat_m_all[which(mid_lat_m_all[,4] != mid_lat_m_all[,j+4]), 3]) / mid_lat_area_lr
+  mega_no_urban_mid[j] <- sum(mid_lat_m_no_urban[which(mid_lat_m_no_urban[,4] != mid_lat_m_no_urban[,j+4]), 3]) / mid_lat_area_hr
+  mega_no_human_mid[j] <- sum(mid_lat_m_no_human[which(mid_lat_m_no_human[,4] != mid_lat_m_no_human[,j+4]), 3]) / mid_lat_area_hr
+  
+  mega_low[j] <- sum(low_lat_m_all[which(low_lat_m_all[,4] != low_lat_m_all[,j+4]), 3]) / low_lat_area_lr
+  mega_no_urban_low[j] <- sum(low_lat_m_no_urban[which(low_lat_m_no_urban[,4] != low_lat_m_no_urban[,j+4]), 3]) / low_lat_area_hr
+  mega_no_human_low[j] <- sum(low_lat_m_no_human[which(low_lat_m_no_human[,4] != low_lat_m_no_human[,j+4]), 3]) / low_lat_area_hr
 }
 
 #Add slice midpoints to plot against
-lat_plot <- as.data.frame(cbind(midpoints, changes_high, changes_mid, changes_low))
-lat_plot <- pivot_longer(lat_plot, !midpoints, names_to = "latitude",
-                         names_prefix = "changes_")
+lat_plot <- as.data.frame(cbind(midpoints, all_high, all_mid, all_low,
+                                no_urban_high, no_urban_mid, no_urban_low,
+                                no_human_high, no_human_mid, no_human_low))
+lat_plot <- pivot_longer(lat_plot, !midpoints, names_to = "latitude")
 
-lat_plot_m <- as.data.frame(cbind(midpoints, mega_high, mega_mid, mega_low))
+
+lat_plot_m <- as.data.frame(cbind(midpoints, mega_high, mega_mid, mega_low,
+                                  mega_no_urban_high, mega_no_urban_mid, mega_no_urban_low,
+                                  mega_no_human_high, mega_no_human_mid, mega_no_human_low))
 lat_plot_m <- pivot_longer(lat_plot_m, !midpoints, names_to = "latitude",
                            names_prefix = "mega_")
 
 #Plot
 ggplot(data = lat_plot, aes(x = midpoints, y = value, group = latitude, colour = latitude)) +
   geom_line() +
-  xlab("Year") + ylab("Proportion of terrestrial area undergoing biome transitions compared to 2000-2020") +
+  scale_colour_manual(values = c("firebrick1", "cadetblue1", "green2",
+                                 "firebrick4", "cadetblue4", "green4",
+                                 "firebrick3", "cadetblue3", "green3")) +
+  xlab("Year") + ylab("Proportion of terrestrial area undergoing biome transitions between slices") +
   theme_classic()
+ggsave(paste0("figures/Biome transitions from present by latitude ", RCP, ".pdf"), width = 10, height = 6, dpi = 600)
 
 ggplot(data = lat_plot_m, aes(x = midpoints, y = value, group = latitude, colour = latitude)) +
   geom_line() +
-  xlab("Year") + ylab("Proportion of terrestrial area undergoing megabiome transitions compared to 2000-2020") +
+  scale_colour_manual(values = c("firebrick1", "cadetblue1", "green2",
+                                 "firebrick4", "cadetblue4", "green4",
+                                 "firebrick3", "cadetblue3", "green3")) +
+  xlab("Year") + ylab("Proportion of terrestrial area undergoing megabiome transitions between slices") +
   theme_classic()
-ggsave("Transitions by latitude.pdf", width = 10, height = 6, dpi = 600)
+ggsave(paste0("figures/Megabiome transitions from present by latitude ", RCP, ".pdf"), width = 10, height = 6, dpi = 600)
