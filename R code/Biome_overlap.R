@@ -14,27 +14,25 @@ mega_filenames <- c("RCP2.6_mega_all", "RCP2.6_mega_no_urban",
                     "RCP4.5_mega_no_urban", "RCP4.5_mega_no_human",
                     "RCP6_mega_all", "RCP6_mega_no_urban", "RCP6_mega_no_human")
 
+#List columns
+slices <- c("X2000.2019", "X2020.2039", "X2040.2059", "X2060.2079", "X2080.2099",
+            "X2100.2119", "X2120.2139", "X2140.2159", "X2160.2179", "X2180.2199",
+            "X2200.2219", "X2220.2239", "X2240.2259", "X2260.2279", "X2280.2299",
+            "X2300.2319", "X2320.2339", "X2340.2359", "X2360.2379", "X2380.2399",
+            "X2400.2419", "X2420.2439", "X2440.2459", "X2460.2479", "X2480.2499")
+midpoints <- seq(from = 2020, to = 2480, by = 20)
+
+#List biome labels, and load conversion table with full names
+biome_tags <- seq(1, 28, 1)
+megabiome_tags <- c("A", "B", "C", "D", "E", "F", "G", "H", "I")
+conversion <- read.table("data/biome_conversion.txt", sep = ",")
+
 overlap_area_all <- data.frame(); overlap_area_m_all <- data.frame()
 
 for (k in 1:length(filenames)){
   #Read in biome IDs
   biomes <- read.csv(paste0("data/cleaned/", filenames[k], ".csv"))
   megabiomes <- read.csv(paste0("data/cleaned/", mega_filenames[k], ".csv"))
-
-  #Read in biome conversion
-  conversion <- read.table("data/biome_conversion.txt", sep = ",")
-
-  #List columns
-  slices <- c("X2000.2019", "X2020.2039", "X2040.2059", "X2060.2079", "X2080.2099",
-              "X2100.2119", "X2120.2139", "X2140.2159", "X2160.2179", "X2180.2199",
-              "X2200.2219", "X2220.2239", "X2240.2259", "X2260.2279", "X2280.2299",
-              "X2300.2319", "X2320.2339", "X2340.2359", "X2360.2379", "X2380.2399",
-              "X2400.2419", "X2420.2439", "X2440.2459", "X2460.2479", "X2480.2499")
-  midpoints <- seq(from = 2020, to = 2480, by = 20)
-
-  #Count the biomes in each time slice and convert to a proportion
-  biome_tags <- seq(1, 28, 1)
-  megabiome_tags <- c("A", "B", "C", "D", "E", "F", "G", "H", "I")
   
   #Remove NAs (needed for no_urban and no_human)
   biomes <- na.omit(biomes)

@@ -4,6 +4,8 @@
 library(tidyverse)
 library(geosphere)
 
+#Look up geosphere::bearing()
+
 #Read in biome IDs
 biomes <- read.csv("data/cleaned/RCP6_all.csv")
 megabiomes <- read.csv("data/cleaned/RCP6_mega_all.csv")
