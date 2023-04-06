@@ -4,9 +4,22 @@
 library(tidyverse)
 library(rlang)
 
+#List filenames
+filenames <- c("RCP2.6_all", "RCP2.6_no_urban", "RCP2.6_no_human",
+               "RCP4.5_all", "RCP4.5_no_urban", "RCP4.5_no_human",
+               "RCP6_all", "RCP6_no_urban", "RCP6_no_human")
+
+mega_filenames <- c("RCP2.6_mega_all", "RCP2.6_mega_no_urban",
+                    "RCP2.6_mega_no_human", "RCP4.5_mega_all",
+                    "RCP4.5_mega_no_urban", "RCP4.5_mega_no_human",
+                    "RCP6_mega_all", "RCP6_mega_no_urban", "RCP6_mega_no_human")
+
+#Pick file
+file_no <- 1
+
 #Read in biome IDs
-biomes <- read.csv("data/cleaned/RCP6_all.csv")
-megabiomes <- read.csv("data/cleaned/RCP6_mega_all.csv")
+biomes <- read.csv(paste0("data/cleaned/", filenames[file_no], ".csv"))
+megabiomes <- read.csv(paste0("data/cleaned/", mega_filenames[file_no], ".csv"))
 
 #Read in biome conversion
 conversion <- read.table("data/biome_conversion.txt", sep = ",")
@@ -22,6 +35,10 @@ midpoints <- seq(from = 2010, to = 2490, by = 20)
 
 #Add up total terrestrial area
 total_area <- sum(biomes$area_km2)
+
+#Remove NAs (needed for no_urban and no_human)
+biomes <- na.omit(biomes)
+megabiomes <- na.omit(megabiomes)
 
 #Count the biomes in each time slice and convert to a proportion
 change_area <- seq(1, 28, 1)
@@ -66,18 +83,20 @@ change_area$value <- as.numeric(change_area$value)
 mega_area$value <- as.numeric(mega_area$value)
 
 #Convert biome numbers to labels
-change_area <- left_join(change_area, conversion, by = c("biome" = "V1"))
-conversion <- distinct(conversion, V3, .keep_all = T)
-mega_area <- left_join(mega_area, conversion, by = c("megabiome" = "V3"))
+#change_area <- left_join(change_area, conversion, by = c("biome" = "V1"))
+#conversion <- distinct(conversion, V3, .keep_all = T)
+#mega_area <- left_join(mega_area, conversion, by = c("megabiome" = "V3"))
+change_area$biome <- as.factor(change_area$biome)
 
 #Plot results
-ggplot(data = change_area, aes(x = name, y = value, fill = V2)) +
+ggplot(data = change_area, aes(x = name, y = value, fill = biome)) +
   geom_bar(stat = "identity", col = "black") +
   xlab("Year") + ylab("Proportion of terrestrial area") +
   theme_classic()
+ggsave(paste0("figures/Biome area ", filenames[file_no], ".pdf"), width = 10, height = 6, dpi = 600)
 
-ggplot(data = mega_area, aes(x = name, y = value, fill = V4)) +
+ggplot(data = mega_area, aes(x = name, y = value, fill = megabiome)) +
   geom_bar(stat = "identity", col = "black") +
   xlab("Year") + ylab("Proportion of terrestrial area") +
   theme_classic()
-ggsave("Terrestrial area.pdf", width = 10, height = 6, dpi = 600)
+ggsave(paste0("figures/Megabiome area ", filenames[file_no], ".pdf"), width = 10, height = 6, dpi = 600)
