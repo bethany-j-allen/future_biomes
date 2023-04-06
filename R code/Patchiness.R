@@ -2,7 +2,6 @@
 #Code to count patches and quantify fragmentation of biomes
 
 library(tidyverse)
-library(ncdf4)
 library(raster)
 library(landscapemetrics)
 
@@ -25,16 +24,10 @@ for (i in 1:length(slices)){
   filename <- paste0("data/netCDFs/RCP6/xoazm_", slices[i], "AD_biome4out.nc")
   
   #Read in netCDF
-  netCDF <- nc_open(filename)
-  #print(netCDF)
-  
-  #Pull biome grid as a raster
-  biomes <- ncvar_get(netCDF, "biome")
-  biome_raster <- raster(biomes)
-  extent(biome_raster) <- c(0, 360, -90, 90)
+  biomes <- raster(filename, varname = "biome")
   
   #Delineate patches
-  patches <- get_patches(biome_raster, directions = 8)
+  patches <- get_patches(biomes, directions = 8)
   patches <- patches[[1]]
   names(patches) <- gsub("class_", "", names(patches))
   
@@ -44,17 +37,19 @@ for (i in 1:length(slices)){
       patch_table[j,i] <- patch_count } else
         { patch_table[j,i] <- 0 }
   }
-
 }
 
 #Clean table
 colnames(patch_table) <- midpoints
-patch_table$labels <- conversion$V2
-patch_table <- pivot_longer(patch_table, -labels)
+patch_table$biomes <- seq(1, 28, 1)
+#patch_table$labels <- conversion$V2
+patch_table <- pivot_longer(patch_table, !biomes)
+
+patch_table$biomes <- as.factor(patch_table$biomes)
 
 #Plot
 ggplot(data = patch_table, aes(x = name, y = value,
-                                group = labels, col = labels)) +
+                                group = biomes, col = biomes)) +
   geom_line() +
   xlab("Year") + ylab("Number of patches") +
   theme_classic()
