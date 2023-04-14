@@ -93,3 +93,22 @@ for (k in 1:(length(slices) - 1)){
 
 #Add labels
 colnames(count_table) <- c("Year", "Biome", "Unoccupiable_cells", "Total_cells")
+
+#Add proportions
+count_table$Proportion <- count_table$Unoccupiable_cells /
+  count_table$Total_cells
+
+#Save table
+write.csv(count_table, "data/counts/RCP6_all.csv", row.names = FALSE)
+count_table <- read.csv("data/counts/RCP6_all.csv")
+
+count_table$Biome <- as.factor(count_table$Biome)
+
+#Plot
+ggplot(data = count_table, aes(x = Year, y = Proportion, group = Biome,
+                               colour = Biome)) +
+  geom_line() +
+  xlab("Year") + ylab("Proportion of biome cells not adjacent to those in previous time slice") +
+  scale_x_continuous(guide = guide_axis(angle = 90)) +
+  theme_classic()
+ggsave("figures/Unoccupiable_cells.pdf", width = 10, height = 6, dpi = 600)
