@@ -12,7 +12,7 @@ filenames <- c("RCP2.6_all", "RCP2.6_no_urban", "RCP2.6_no_human",
 midpoints <- seq(from = 2020, to = 2480, by = 20)
 
 #Read in biome conversion
-conversion <- read.table("data/biome_conversion.txt", sep = ",")
+#conversion <- read.table("data/biome_conversion.txt", sep = ",")
 
 count_table <- data.frame()
 
@@ -90,18 +90,20 @@ for (l in 1:length(filenames)) {
     print(paste("File", l, "Slice", k, "Biome", i))
     }
   }
+  #Add labels
+  colnames(count_table) <- c("Year", "Biome", "File", "Unoccupiable_cells",
+                             "Total_cells")
+  
+  #Add proportions
+  count_table$Proportion <- as.numeric(count_table$Unoccupiable_cells) /
+    as.numeric(count_table$Total_cells)
+  
+  #Save table
+  write.csv(count_table, paste0("data/counts/", filenames[l], ".csv"),
+            row.names = FALSE)
 }
 
-#Add labels
-colnames(count_table) <- c("Year", "Biome", "File", "Unoccupiable_cells",
-                           "Total_cells")
-
-#Add proportions
-count_table$Proportion <- as.numeric(count_table$Unoccupiable_cells) /
-  as.numeric(count_table$Total_cells)
-
-#Save table
-write.csv(count_table, "data/counts/RCP6_all.csv", row.names = FALSE)
+#Read in table
 count_table <- read.csv("data/counts/RCP6_all.csv")
 
 count_table$Biome <- as.factor(count_table$Biome)
