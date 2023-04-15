@@ -3,100 +3,102 @@
 # same biome in the previous time slice (making occupation difficult)
 
 library(tidyverse)
-library(raster)
 
-#List columns
-slices <- c("2000-2019", "2020-2039", "2040-2059", "2060-2079", "2080-2099",
-            "2100-2119", "2120-2139", "2140-2159", "2160-2179", "2180-2199",
-            "2200-2219", "2220-2239", "2240-2259", "2260-2279", "2280-2299",
-            "2300-2319", "2320-2339", "2340-2359", "2360-2379", "2380-2399",
-            "2400-2419", "2420-2439", "2440-2459", "2460-2479", "2480-2499")
-midpoints <- seq(from = 2010, to = 2490, by = 20)
-megabiome_tags <- c("A", "B", "C", "D", "E", "F", "G", "H", "I")
+#List filenames
+filenames <- c("RCP2.6_all", "RCP2.6_no_urban", "RCP2.6_no_human",
+               "RCP4.5_all", "RCP4.5_no_urban", "RCP4.5_no_human",
+               "RCP6_all", "RCP6_no_urban", "RCP6_no_human")
+
+midpoints <- seq(from = 2020, to = 2480, by = 20)
 
 #Read in biome conversion
 conversion <- read.table("data/biome_conversion.txt", sep = ",")
 
 count_table <- data.frame()
 
-for (k in 1:(length(slices) - 1)){
-  #Create filename
-  filename1 <- paste0("data/netCDFs/RCP6/xoazm_", slices[k], "AD_biome4out.nc")
-  filename2 <- paste0("data/netCDFs/RCP6/xoazm_", slices[(k + 1)], "AD_biome4out.nc")
+for (l in 1:length(filenames)) {
+  #Read file
+  biomes <- read.csv(paste0("data/cleaned/", filenames[l], ".csv"))
   
-  #Read in netCDFs
-  slice1 <- raster(filename1, varname = "biome")
-  slice2 <- raster(filename2, varname = "biome")
+  #Remove NAs (needed for no_urban and no_human)
+  biomes <- na.omit(biomes)
   
-  #Rotate longitude values from 0 to 360 to -180 to 180
-  slice1 <- rotate(slice1)
-  slice2 <- rotate(slice2)
+  #For each pair of adjacent slices, loop through individual biomes
+  #For each cell, test for the same biome adjacent in previous slice
   
-  #Convert raster into data frame
-  slice1_table <- data.frame(coordinates(slice1), values(slice1))
-  slice2_table <- data.frame(coordinates(slice2), values(slice2))
-  names(slice1_table) <- c("lon", "lat", "biome")
-  names(slice2_table) <- c("lon", "lat", "biome")
-  
-  #Remove NAs
-  slice1_table <- na.omit(slice1_table)
-  slice2_table <- na.omit(slice2_table)
-  
-  #Filter slices to a single biome, and determine whether any of the
-  # neighbouring cells were occupied in the previous time slice
-  
-  for (i in 1:28) {
-    #Filter to cells of a single biome
-    biome_cells1 <- slice1_table[which(slice1_table[,3] == i),]
-    biome_cells2 <- slice2_table[which(slice2_table[,3] == i),]
+  for (k in 1:24) {
+    slice1 <- biomes[,c(1, 2, (3 + k))]
+    slice2 <- biomes[,c(1, 2, (4 + k))]
     
-    cell_count <- 0
+    for (i in 1:28) {
+      #Filter to cells of a single biome
+      biome_cells1 <- slice1[which(slice1[,3] == i),]
+      biome_cells2 <- slice2[which(slice2[,3] == i),]
     
-    if (nrow(biome_cells2) > 0) {
+      cell_count <- 0
     
-      #For each cell in the second slice
-      for (j in 1:nrow(biome_cells2)){
-        #Select lat/long
-        cell_lon <- biome_cells2[j,1]
-        cell_lat <- biome_cells2[j,2]
+      if (nrow(biome_cells2) > 0) {
+        
+        #For each cell in the second slice
+        for (j in 1:nrow(biome_cells2)) {
+          
+          #Select lat/long
+          cell_lon <- biome_cells2[j,1]
+          cell_lat <- biome_cells2[j,2]
       
-        #Extend into 9 by 9 cell grid
-        cell_upper_lon <- cell_lon + 0.5
-        cell_lower_lon <- cell_lon - 0.5
-        cell_upper_lat <- cell_lat + 0.5
-        cell_lower_lat <- cell_lat - 0.5
+          #If cell wasn't occupied in previous slice, check neighbours
+          if (nrow(filter(biome_cells1, lon == cell_lon,
+                          lat == cell_lat)) != 1) {
+            
+            #Extend into 9 by 9 cell grid
+            if (l %in% c(1, 4, 7)) {
+              cell_upper_lon <- cell_lon + 0.5
+              cell_lower_lon <- cell_lon - 0.5
+              cell_upper_lat <- cell_lat + 0.5
+              cell_lower_lat <- cell_lat - 0.5
+            } else {
+              cell_upper_lon <- cell_lon + 0.0833
+              cell_lower_lon <- cell_lon - 0.0833
+              cell_upper_lat <- cell_lat + 0.0833
+              cell_lower_lat <- cell_lat - 0.0833
+            }
       
-        #Wrap around limits if needed
-        if (cell_upper_lon > 180) {cell_upper_lon <- cell_upper_lon - 360}
-        if (cell_lower_lon < -180) {cell_lower_lon <- cell_lower_lon + 360}
-        if (cell_upper_lat > 90) {cell_upper_lon <- cell_upper_lon - 180}
-        if (cell_lower_lon < -90) {cell_lower_lon <- cell_lower_lon + 180}
+            #Wrap around limits if needed
+            if (cell_upper_lon > 180) {cell_upper_lon <- cell_upper_lon - 360}
+            if (cell_lower_lon < -180) {cell_lower_lon <- cell_lower_lon + 360}
+            if (cell_upper_lat > 90) {cell_upper_lon <- cell_upper_lon - 180}
+            if (cell_lower_lon < -90) {cell_lower_lon <- cell_lower_lon + 180}
       
-        #Filter first time slice to 9 by 9 grid
-        test_area <- filter(biome_cells1, lon %in% c(cell_upper_lon,
+            #Filter first time slice to 9 by 9 grid
+            test_area <- filter(biome_cells1, lon %in% c(cell_upper_lon,
                                                 cell_lon,
                                                 cell_lower_lon))
-        test_area <- filter(test_area, lat %in% c(cell_upper_lat,
+            test_area <- filter(test_area, lat %in% c(cell_upper_lat,
                                                   cell_lat,
                                                   cell_lower_lat))
-        #If no cells in grid are found, add to tally
-        if (nrow(test_area) == 0) {cell_count <- cell_count + 1}
+            
+            #If no cells in grid are found, add to tally
+            if (nrow(test_area) == 0) {cell_count <- cell_count + 1}
+          }
+        }
       }
-    }
     #Add to table of counts
-    count_table <- rbind(count_table, c(midpoints[k], i, cell_count, nrow(biome_cells2)))
+    count_table <- rbind(count_table, c(midpoints[k], i, filenames[l],
+                                        cell_count, nrow(biome_cells2)))
     
     #Print progress
-    print(paste("Slice", k, "Biome", i))
+    print(paste("File", l, "Slice", k, "Biome", i))
+    }
   }
 }
 
 #Add labels
-colnames(count_table) <- c("Year", "Biome", "Unoccupiable_cells", "Total_cells")
+colnames(count_table) <- c("Year", "Biome", "File", "Unoccupiable_cells",
+                           "Total_cells")
 
 #Add proportions
-count_table$Proportion <- count_table$Unoccupiable_cells /
-  count_table$Total_cells
+count_table$Proportion <- as.numeric(count_table$Unoccupiable_cells) /
+  as.numeric(count_table$Total_cells)
 
 #Save table
 write.csv(count_table, "data/counts/RCP6_all.csv", row.names = FALSE)
