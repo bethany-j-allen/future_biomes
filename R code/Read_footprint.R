@@ -116,6 +116,10 @@ for (i in 1:length(slices)){
 }
 
 #Save table
+no_urban_df$lon <- round(no_urban_df$lon, 4)
+no_urban_df$lat <- round(no_urban_df$lat, 4)
+no_human_df$lon <- round(no_human_df$lon, 4)
+no_human_df$lon <- round(no_human_df$lon, 4)
 write.csv(no_urban_df, "data/cleaned/RCP6_no_urban.csv", row.names = F)
 write.csv(no_human_df, "data/cleaned/RCP6_no_human.csv", row.names = F)
 
