@@ -66,8 +66,6 @@ for (l in 1:length(filenames)) {
             #Wrap around limits if needed
             if (cell_upper_lon > 180) {cell_upper_lon <- cell_upper_lon - 360}
             if (cell_lower_lon < -180) {cell_lower_lon <- cell_lower_lon + 360}
-            if (cell_upper_lat > 90) {cell_upper_lon <- cell_upper_lon - 180}
-            if (cell_lower_lon < -90) {cell_lower_lon <- cell_lower_lon + 180}
       
             #Filter first time slice to 9 by 9 grid
             test_area <- filter(biome_cells1, lon %in% c(cell_upper_lon,
