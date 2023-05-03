@@ -14,13 +14,6 @@ mega_filenames <- c("RCP2.6_mega_all", "RCP2.6_mega_no_urban",
                     "RCP4.5_mega_no_urban", "RCP4.5_mega_no_human",
                     "RCP6_mega_all", "RCP6_mega_no_urban", "RCP6_mega_no_human")
 
-#Pick file
-file_no <- 1
-
-#Read in biome IDs
-biomes <- read.csv(paste0("data/cleaned/", filenames[file_no], ".csv"))
-megabiomes <- read.csv(paste0("data/cleaned/", mega_filenames[file_no], ".csv"))
-
 #Read in biome conversion
 conversion <- read.table("data/biome_conversion.txt", sep = ",")
 
@@ -33,70 +26,97 @@ slices <- c("X2000.2019", "X2020.2039", "X2040.2059", "X2060.2079", "X2080.2099"
 megabiome_codes <- c("A", "B", "C", "D", "E", "F", "G", "H", "I")
 midpoints <- seq(from = 2010, to = 2490, by = 20)
 
-#Add up total terrestrial area
-total_area <- sum(biomes$area_km2)
+biome_shares <- c(); megabiome_shares <- c()
 
-#Remove NAs (needed for no_urban and no_human)
-biomes <- na.omit(biomes)
-megabiomes <- na.omit(megabiomes)
+for (j in 1:length(filenames)){
 
-#Count the biomes in each time slice and convert to a proportion
-change_area <- seq(1, 28, 1)
-mega_area <- c("A", "B", "C", "D", "E", "F", "G", "H", "I")
+  #Read in biome IDs
+  biomes <- read.csv(paste0("data/cleaned/", filenames[j], ".csv"))
+  megabiomes <- read.csv(paste0("data/cleaned/", mega_filenames[j], ".csv"))
 
-for (i in 1:length(slices)){
-  #Designate slice
-  one_bin <- data_sym(slices[i])
+  #Add up total terrestrial area
+  total_area <- sum(biomes$area_km2)
+
+  #Remove NAs (needed for no_urban and no_human)
+  biomes <- na.omit(biomes)
+  megabiomes <- na.omit(megabiomes)
+
+  #Count the biomes in each time slice and convert to a proportion
+  change_area <- seq(1, 28, 1)
+  mega_area <- c("A", "B", "C", "D", "E", "F", "G", "H", "I")
+
+  for (i in 1:length(slices)){
+    #Designate slice
+    one_bin <- data_sym(slices[i])
   
-  #Add up total area covered by each biome
-  biome_areas <- c(); megabiome_areas <- c()
-  for (k in 1:28) {
-    one_biome <- filter(biomes, !!one_bin == k)
-    biome_area <- sum(one_biome$area_km2)
-    biome_areas[k] <- biome_area
-    if (k < (length(megabiome_codes) + 1)) {
-      one_megabiome <- filter(megabiomes, !!one_bin == megabiome_codes[k])
-      megabiome_area <- sum(one_megabiome$area_km2)
-      megabiome_areas[k] <- megabiome_area
+    #Add up total area covered by each biome
+    biome_areas <- c(); megabiome_areas <- c()
+    for (k in 1:28) {
+      one_biome <- filter(biomes, !!one_bin == k)
+      biome_area <- sum(one_biome$area_km2)
+      biome_areas[k] <- biome_area
+      if (k < (length(megabiome_codes) + 1)) {
+        one_megabiome <- filter(megabiomes, !!one_bin == megabiome_codes[k])
+        megabiome_area <- sum(one_megabiome$area_km2)
+        megabiome_areas[k] <- megabiome_area
+      }
     }
+  
+    #Convert areas to proportions
+    biome_areas <- biome_areas/total_area
+    megabiome_areas <- megabiome_areas/total_area
+  
+    #Pull values and bind to overall results
+    change_area <- cbind(change_area, biome_areas)
+    mega_area <- cbind(mega_area, megabiome_areas)
   }
   
-  #Convert areas to proportions
-  biome_areas <- biome_areas/total_area
-  megabiome_areas <- megabiome_areas/total_area
+  #Convert results to data frames and clean column names
+  change_area <- as.data.frame(change_area)
+  colnames(change_area) <- c("biome", midpoints)
+  change_area <- pivot_longer(change_area, !biome)
+  change_area$RCP <- sub("_.*", "", filenames[j])
+  change_area$footprint <- sub(".*_", "", filenames[j])
+  biome_shares <- rbind(biome_shares, change_area)
+
+  mega_area <- as.data.frame(mega_area)
+  colnames(mega_area) <- c("megabiome", midpoints)
+  mega_area <- pivot_longer(mega_area, !megabiome)
+  mega_area$RCP <- sub("_.*", "", mega_filenames[j])
+  mega_area$footprint <- sub(".*_", "", mega_filenames[j])
+  megabiome_shares <- rbind(megabiome_shares, mega_area)
   
-  #Pull values and bind to overall results
-  change_area <- cbind(change_area, biome_areas)
-  mega_area <- cbind(mega_area, megabiome_areas)
+  #Track progress
+  print(j)
 }
 
-#Convert results to data frames and clean column names
-change_area <- as.data.frame(change_area)
-colnames(change_area) <- c("biome", midpoints)
-change_area <- pivot_longer(change_area, !biome)
+biome_shares$value <- as.numeric(biome_shares$value)
+megabiome_shares$value <- as.numeric(megabiome_shares$value)
 
-mega_area <- as.data.frame(mega_area)
-colnames(mega_area) <- c("megabiome", midpoints)
-mega_area <- pivot_longer(mega_area, !megabiome)
-
-change_area$value <- as.numeric(change_area$value)
-mega_area$value <- as.numeric(mega_area$value)
+biome_shares$footprint <- factor(biome_shares$footprint,
+                                   levels = c("all", "urban", "human"))
+megabiome_shares$footprint <- factor(megabiome_shares$footprint,
+                                 levels = c("all", "urban", "human"))
 
 #Convert biome numbers to labels
-#change_area <- left_join(change_area, conversion, by = c("biome" = "V1"))
+#biome_shares <- left_join(biome_shares, conversion, by = c("biome" = "V1"))
 #conversion <- distinct(conversion, V3, .keep_all = T)
-#mega_area <- left_join(mega_area, conversion, by = c("megabiome" = "V3"))
-change_area$biome <- as.factor(change_area$biome)
+#megabiome_shares <- left_join(megabiome_shares, conversion, by = c("megabiome" = "V3"))
+biome_shares$biome <- as.factor(biome_shares$biome)
 
 #Plot results
-ggplot(data = change_area, aes(x = name, y = value, fill = biome)) +
+ggplot(data = biome_shares, aes(x = name, y = value, fill = biome)) +
   geom_bar(stat = "identity", col = "black") +
+  facet_grid(RCP ~ footprint) +
   xlab("Year") + ylab("Proportion of terrestrial area") +
-  theme_classic()
-ggsave(paste0("figures/Biome area ", filenames[file_no], ".pdf"), width = 10, height = 6, dpi = 600)
+  scale_x_discrete(guide = guide_axis(angle = 90)) +
+  theme_classic() 
+ggsave(paste0("figures/Biome area.pdf"), width = 10, height = 6, dpi = 600)
 
-ggplot(data = mega_area, aes(x = name, y = value, fill = megabiome)) +
+ggplot(data = megabiome_shares, aes(x = name, y = value, fill = megabiome)) +
   geom_bar(stat = "identity", col = "black") +
+  facet_grid(RCP ~ footprint) +
   xlab("Year") + ylab("Proportion of terrestrial area") +
+  scale_x_discrete(guide = guide_axis(angle = 90)) +
   theme_classic()
-ggsave(paste0("figures/Megabiome area ", filenames[file_no], ".pdf"), width = 10, height = 6, dpi = 600)
+ggsave(paste0("figures/Megabiome area.pdf"), width = 10, height = 6, dpi = 600)
