@@ -67,7 +67,7 @@ ggplot(data = to_plot_biomes, aes(x = midpoints, y = change_area,
   geom_line() +
   scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
                                       "cadetblue1", "cadetblue4", "cadetblue3", 
-                                      "green2", "green4", "green3")) +
+                                      "gold", "gold4", "gold3")) +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing biome transitions between slices") +
   theme_classic()
 ggsave("figures/Biome transitions between slices.pdf", width = 10, height = 6, dpi = 600)
@@ -77,7 +77,7 @@ ggplot(data = to_plot_mega, aes(x = midpoints, y = mega_area,
   geom_line() +
   scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
                                       "cadetblue1", "cadetblue4", "cadetblue3", 
-                                      "green2", "green4", "green3")) +
+                                      "gold", "gold4", "gold3")) +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing megabiome transitions between slices") +
   theme_classic()
 ggsave("figures/Megabiome transitions between slices.pdf", width = 10, height = 6, dpi = 600)
@@ -221,7 +221,7 @@ ggplot(data = lat_plot_all, aes(x = midpoints, y = value,
                                 group = footprint, colour = footprint)) +
   geom_line() +
   facet_grid(RCP ~ latitude) +
-  scale_colour_manual(values = c("firebrick1", "cadetblue1", "green2")) +
+  scale_colour_manual(values = c("firebrick1", "cadetblue1", "gold")) +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing biome transitions between slices") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
@@ -231,7 +231,7 @@ ggplot(data = mega_lat_plot_all, aes(x = midpoints, y = value,
                               group = footprint, colour = footprint)) +
   geom_line() +
   facet_grid(RCP ~ latitude) +
-  scale_colour_manual(values = c("firebrick1", "cadetblue1", "green2")) +
+  scale_colour_manual(values = c("firebrick1", "cadetblue1", "gold")) +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing megabiome transitions between slices") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
@@ -282,7 +282,7 @@ ggplot(data = to_plot_biomes, aes(x = midpoints, y = change_area,
   geom_line() +
   scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
                                       "cadetblue1", "cadetblue4", "cadetblue3", 
-                                      "green2", "green4", "green3")) +
+                                      "gold", "gold4", "gold3")) +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing biome transitions compared to 2000-2020") +
   theme_classic()
 ggsave("figures/Biome transitions from present.pdf", width = 10, height = 6, dpi = 600)
@@ -292,7 +292,7 @@ ggplot(data = to_plot_mega, aes(x = midpoints, y = mega_area,
   geom_line() +
   scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
                                       "cadetblue1", "cadetblue4", "cadetblue3", 
-                                      "green2", "green4", "green3")) +
+                                      "gold", "gold4", "gold3")) +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing megabiome transitions compared to 2000-2020") +
   theme_classic()
 ggsave("figures/Megabiome transitions between slices.pdf", width = 10, height = 6, dpi = 600)
@@ -436,7 +436,7 @@ ggplot(data = lat_plot_all, aes(x = midpoints, y = value,
                                 group = footprint, colour = footprint)) +
   geom_line() +
   facet_grid(RCP ~ latitude) +
-  scale_colour_manual(values = c("firebrick1", "cadetblue1", "green2")) +
+  scale_colour_manual(values = c("firebrick1", "cadetblue1", "gold")) +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing biome transitions between slices") +
   theme_classic()
 ggsave(paste0("figures/Biome transitions from present by latitude.pdf"), width = 10, height = 6, dpi = 600)
@@ -445,7 +445,7 @@ ggplot(data = mega_lat_plot_all, aes(x = midpoints, y = value,
                                      group = footprint, colour = footprint)) +
   geom_line() +
   facet_grid(RCP ~ latitude) +
-  scale_colour_manual(values = c("firebrick1", "cadetblue1", "green2")) +
+  scale_colour_manual(values = c("firebrick1", "cadetblue1", "gold")) +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing megabiome transitions between slices") +
   theme_classic()
 ggsave(paste0("figures/Megabiome transitions from present by latitude.pdf"), width = 10, height = 6, dpi = 600)

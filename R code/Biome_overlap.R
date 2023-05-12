@@ -116,7 +116,7 @@ ggplot(data = overlap_area_all, aes(x = name, y = value, group = file, colour = 
   facet_wrap( ~ biome, ncol = 7, labeller = label_wrap_gen(multi_line = T)) +
   scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
                                  "cadetblue1", "cadetblue4", "cadetblue3", 
-                                 "green2", "green4", "green3")) +
+                                 "gold", "gold4", "gold3")) +
   xlab("Year") + ylab("Proportion of biome area overlapping with previous slice") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
@@ -127,7 +127,7 @@ ggplot(data = overlap_area_m_all, aes(x = name, y = value, group = file, colour 
   facet_wrap( ~ megabiome, ncol = 3) +
   scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
                                  "cadetblue1", "cadetblue4", "cadetblue3", 
-                                 "green2", "green4", "green3")) +
+                                 "gold", "gold4", "gold3")) +
   xlab("Year") + ylab("Proportion of megabiome area overlapping with previous slice") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
@@ -138,7 +138,7 @@ ggplot(data = overlap_area_p_all, aes(x = name, y = value, group = file, colour 
   facet_wrap( ~ biome, ncol = 7, labeller = label_wrap_gen(multi_line = T)) +
   scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
                                  "cadetblue1", "cadetblue4", "cadetblue3", 
-                                 "green2", "green4", "green3")) +
+                                 "gold", "gold4", "gold3")) +
   xlab("Year") + ylab("Proportion of biome area overlapping with present day") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
@@ -149,7 +149,7 @@ ggplot(data = overlap_area_m_p_all, aes(x = name, y = value, group = file, colou
   facet_wrap( ~ megabiome, ncol = 3) +
   scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
                                  "cadetblue1", "cadetblue4", "cadetblue3", 
-                                 "green2", "green4", "green3")) +
+                                 "gold", "gold4", "gold3")) +
   xlab("Year") + ylab("Proportion of megabiome area overlapping with present day") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
