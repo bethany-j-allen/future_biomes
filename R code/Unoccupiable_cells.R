@@ -14,9 +14,9 @@ midpoints <- seq(from = 2020, to = 2480, by = 20)
 #Read in biome conversion
 #conversion <- read.table("data/biome_conversion.txt", sep = ",")
 
-count_table <- data.frame()
-
 for (l in 1:length(filenames)) {
+  count_table <- data.frame()
+  
   #Read file
   biomes <- read.csv(paste0("data/cleaned/", filenames[l], ".csv"))
   
@@ -101,15 +101,31 @@ for (l in 1:length(filenames)) {
             row.names = FALSE)
 }
 
-#Read in table
-count_table <- read.csv("data/counts/RCP6_all.csv")
 
+#Read in tables
+count_filenames <- c("RCP2.6_all_counts", "RCP2.6_no_urban_counts",
+                     "RCP2.6_no_human_counts", "RCP4.5_all_counts",
+                     "RCP4.5_no_urban_counts", "RCP4.5_no_human_counts",
+                     "RCP6_all_counts", "RCP6_no_urban_counts",
+                     "RCP6_no_human_counts")
+
+count_table <- data.frame()
+
+for (m in 1:length(count_filenames)) {
+  count_file <- read.csv(paste0("data/counts/", count_filenames[m], ".csv"))
+  count_table <- rbind(count_table, count_file)
+}
+  
 count_table$Biome <- as.factor(count_table$Biome)
 
 #Plot
-ggplot(data = count_table, aes(x = Year, y = Proportion, group = Biome,
-                               colour = Biome)) +
+ggplot(data = count_table, aes(x = Year, y = Proportion, group = File,
+                               colour = File)) +
   geom_line() +
+  facet_wrap( ~ Biome, ncol = 7) +
+  scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
+                                 "cadetblue1", "cadetblue4", "cadetblue3", 
+                                 "gold", "gold4", "gold3")) +
   xlab("Year") + ylab("Proportion of biome cells not adjacent to those in previous time slice") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
