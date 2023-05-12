@@ -98,12 +98,12 @@ overlap_area_p_all <- pivot_longer(overlap_area_p_all, !c(biome, file))
 overlap_area_m_p_all <- pivot_longer(overlap_area_m_p_all, !c(megabiome, file))
 
 #Convert biome numbers to labels
-overlap_area_all <- left_join(overlap_area_all, conversion, by = c("biome" = "V1"))
-conversion_mega <- distinct(conversion, V3, .keep_all = T)
-overlap_area_m_all <- left_join(overlap_area_m_all, conversion_mega, by = c("megabiome" = "V3"))
+#overlap_area_all <- left_join(overlap_area_all, conversion, by = c("biome" = "V1"))
+#conversion_mega <- distinct(conversion, V3, .keep_all = T)
+#overlap_area_m_all <- left_join(overlap_area_m_all, conversion_mega, by = c("megabiome" = "V3"))
 
-overlap_area_p_all <- left_join(overlap_area_p_all, conversion, by = c("biome" = "V1"))
-overlap_area_m_p_all <- left_join(overlap_area_m_p_all, conversion_mega, by = c("megabiome" = "V3"))
+#overlap_area_p_all <- left_join(overlap_area_p_all, conversion, by = c("biome" = "V1"))
+#overlap_area_m_p_all <- left_join(overlap_area_m_p_all, conversion_mega, by = c("megabiome" = "V3"))
 
 overlap_area_all$name <- as.numeric(overlap_area_all$name)
 overlap_area_m_all$name <- as.numeric(overlap_area_m_all$name)
@@ -113,7 +113,7 @@ overlap_area_m_p_all$name <- as.numeric(overlap_area_m_p_all$name)
 #Plot results
 ggplot(data = overlap_area_all, aes(x = name, y = value, group = file, colour = file)) +
   geom_line() +
-  facet_wrap( ~ V2, ncol = 7, labeller = label_wrap_gen(multi_line = T)) +
+  facet_wrap( ~ biome, ncol = 7, labeller = label_wrap_gen(multi_line = T)) +
   scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
                                  "cadetblue1", "cadetblue4", "cadetblue3", 
                                  "green2", "green4", "green3")) +
@@ -124,7 +124,7 @@ ggsave("figures/Biome overlap previous.pdf", width = 10, height = 6, dpi = 600)
 
 ggplot(data = overlap_area_m_all, aes(x = name, y = value, group = file, colour = file)) +
   geom_line() +
-  facet_wrap( ~ V4, ncol = 3) +
+  facet_wrap( ~ megabiome, ncol = 3) +
   scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
                                  "cadetblue1", "cadetblue4", "cadetblue3", 
                                  "green2", "green4", "green3")) +
@@ -135,7 +135,7 @@ ggsave("figures/Megabiome overlap previous.pdf", width = 10, height = 6, dpi = 6
 
 ggplot(data = overlap_area_p_all, aes(x = name, y = value, group = file, colour = file)) +
   geom_line() +
-  facet_wrap( ~ V2, ncol = 7, labeller = label_wrap_gen(multi_line = T)) +
+  facet_wrap( ~ biome, ncol = 7, labeller = label_wrap_gen(multi_line = T)) +
   scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
                                  "cadetblue1", "cadetblue4", "cadetblue3", 
                                  "green2", "green4", "green3")) +
@@ -146,7 +146,7 @@ ggsave("figures/Biome overlap present.pdf", width = 10, height = 6, dpi = 600)
 
 ggplot(data = overlap_area_m_p_all, aes(x = name, y = value, group = file, colour = file)) +
   geom_line() +
-  facet_wrap( ~ V4, ncol = 3) +
+  facet_wrap( ~ megabiome, ncol = 3) +
   scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
                                  "cadetblue1", "cadetblue4", "cadetblue3", 
                                  "green2", "green4", "green3")) +
