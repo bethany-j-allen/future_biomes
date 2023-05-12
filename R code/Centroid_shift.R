@@ -100,16 +100,20 @@ for (m in 1:28){
   s_hem_ranges <- filter(biome_ranges, biome == m) %>% filter(hemisphere == "S")
   if (nrow(n_hem_ranges) > 0){
     centroid_shifts <- rbind(centroid_shifts, cbind(m, seq(from = 2020, to = 2480, by = 20),
-                                         "N", distGeo(n_hem_ranges[,c(5,8)])[1:24]))}
+                                         "N", distGeo(n_hem_ranges[,c(5,8)])[1:24],
+                                         bearing(n_hem_ranges[,c(5,8)])[1:24]))}
   if (nrow(s_hem_ranges) > 0){
     centroid_shifts <- rbind(centroid_shifts, cbind(m, seq(from = 2020, to = 2480, by = 20),
-                                         "S", distGeo(s_hem_ranges[,c(5,8)])[1:24]))}
+                                         "S", distGeo(s_hem_ranges[,c(5,8)])[1:24],
+                                         bearing(s_hem_ranges[,c(5,8)])[1:24]))}
 }
 
 centroid_shifts <- as.data.frame(centroid_shifts)
-colnames(centroid_shifts) <- c("biome", "year", "hemisphere", "distance")
-centroid_shifts$biome <- as.numeric(centroid_shifts$biome)
+colnames(centroid_shifts) <- c("biome", "year", "hemisphere", "distance", "bearing")
+centroid_shifts$biome <- as.factor(centroid_shifts$biome)
+centroid_shifts$year <- as.numeric(centroid_shifts$year)
 centroid_shifts$distance <- as.numeric(centroid_shifts$distance)
+centroid_shifts$bearing <- as.numeric(centroid_shifts$bearing)
 
 centroid_shifts <- left_join(centroid_shifts, conversion, by = c("biome" = "V1"))
 
@@ -121,6 +125,18 @@ ggplot(data = centroid_shifts, aes(x = year, y = distance, group = hemisphere,
   xlab("Year") + ylab("Distance moved by centroid (km2)") +
   theme_classic()
 
+#Plot bearing moved by centroid
+ggplot(data = centroid_shifts, aes(x = bearing, y = distance,
+                                   group = year, col = year)) +
+  geom_segment(aes(xend = bearing, yend = 0.1)) +
+  geom_point() +
+  facet_wrap( ~ biome, ncol = 7) +
+  scale_x_continuous(limits = c(-180, 180),
+                     breaks =  seq(-180, 180, 90)) +
+  #scale_y_log10() +
+  xlab("Bearing of centroid movement") + ylab("Distance moved by centroid (km2)") +
+  coord_polar(start = pi) +
+  theme_bw()
 
 #Determine the megabiome centroids through time
 megabiome_ranges <- data.frame()
@@ -204,17 +220,23 @@ for (m in 1:28){
     mega_centroid_shifts <- rbind(mega_centroid_shifts,
                                   cbind(megabiome_tags[m],
                                         seq(from = 2020, to = 2480, by = 20),
-                                  "N", distGeo(n_hem_ranges_m[,c(5,8)])[1:24]))}
+                                  "N", distGeo(n_hem_ranges_m[,c(5,8)])[1:24],
+                                  bearing(n_hem_ranges_m[,c(5,8)])[1:24]))}
   if (nrow(s_hem_ranges_m) > 0){
     mega_centroid_shifts <- rbind(mega_centroid_shifts,
                                   cbind(megabiome_tags[m],
                                         seq(from = 2020, to = 2480, by = 20),
-                                  "S", distGeo(s_hem_ranges_m[,c(5,8)])[1:24]))}
+                                  "S", distGeo(s_hem_ranges_m[,c(5,8)])[1:24],
+                                  bearing(s_hem_ranges_m[,c(5,8)])[1:24]))}
 }
 
 mega_centroid_shifts <- as.data.frame(mega_centroid_shifts)
-colnames(mega_centroid_shifts) <- c("megabiome", "year", "hemisphere", "distance")
+colnames(mega_centroid_shifts) <- c("megabiome", "year", "hemisphere", "distance",
+                                    "bearing")
+
+mega_centroid_shifts$year <- as.numeric(mega_centroid_shifts$year)
 mega_centroid_shifts$distance <- as.numeric(mega_centroid_shifts$distance)
+mega_centroid_shifts$bearing <- as.numeric(mega_centroid_shifts$bearing)
 
 mega_centroid_shifts <- left_join(mega_centroid_shifts, conversion,
                                   by = c("megabiome" = "V3"))
@@ -226,3 +248,16 @@ ggplot(data = mega_centroid_shifts, aes(x = year, y = distance, group = hemisphe
   facet_wrap( ~ V4, ncol = 3) +
   xlab("Year") + ylab("Distance moved by centroid (km2)") +
   theme_classic()
+
+#Plot bearing moved by centroid
+ggplot(data = mega_centroid_shifts, aes(x = bearing, y = distance,
+                                   group = year, col = year)) +
+  geom_segment(aes(xend = bearing, yend = 0.1)) +
+  geom_point() +
+  facet_wrap( ~ megabiome, ncol = 3) +
+  scale_x_continuous(limits = c(-180, 180),
+                     breaks =  seq(-180, 180, 90)) +
+  #scale_y_log10() +
+  xlab("Bearing of centroid movement") + ylab("Distance moved by centroid (km2)") +
+  coord_polar(start = pi) +
+  theme_bw()
