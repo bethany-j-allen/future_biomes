@@ -238,7 +238,7 @@ ggplot(data = lat_plot_all, aes(x = midpoints, y = value,
   xlab("Year") + ylab("Proportion of terrestrial area undergoing biome transitions between slices") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
-ggsave(paste0("figures/Biome transitions between slices by latitude.pdf"), width = 10, height = 6, dpi = 600)
+ggsave("figures/Biome transitions between slices by latitude.pdf", width = 10, height = 6, dpi = 600)
 
 ggplot(data = mega_lat_plot_all, aes(x = midpoints, y = value,
                               group = footprint, colour = footprint)) +
@@ -248,7 +248,7 @@ ggplot(data = mega_lat_plot_all, aes(x = midpoints, y = value,
   xlab("Year") + ylab("Proportion of terrestrial area undergoing megabiome transitions between slices") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
-ggsave(paste0("figures/Megabiome transitions between slices by latitude.pdf"), width = 10, height = 6, dpi = 600)
+ggsave("figures/Megabiome transitions between slices by latitude.pdf", width = 10, height = 6, dpi = 600)
 
 
 #How much change compared to the present day?
@@ -452,6 +452,11 @@ for (m in 1:3) {
   #Track progress
   print(m)
 }
+
+lat_plot_all$latitude <- factor(lat_plot_all$latitude,
+                                levels = c("high", "mid", "low"))
+mega_lat_plot_all$latitude <- factor(mega_lat_plot_all$latitude,
+                                     levels = c("high", "mid", "low"))
 
 #Plot
 ggplot(data = lat_plot_all, aes(x = midpoints, y = value,
