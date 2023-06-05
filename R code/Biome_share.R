@@ -90,6 +90,8 @@ for (j in 1:length(filenames)){
   print(j)
 }
 
+biome_shares$name <- as.numeric(biome_shares$name)
+megabiome_shares$name <- as.numeric(megabiome_shares$name)
 biome_shares$value <- as.numeric(biome_shares$value)
 megabiome_shares$value <- as.numeric(megabiome_shares$value)
 
@@ -109,7 +111,7 @@ ggplot(data = biome_shares, aes(x = name, y = value, fill = biome)) +
   geom_bar(stat = "identity", col = "black") +
   facet_grid(RCP ~ footprint) +
   xlab("Year") + ylab("Proportion of terrestrial area") +
-  scale_x_discrete(guide = guide_axis(angle = 90)) +
+  scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic() 
 ggsave(paste0("figures/Biome area.pdf"), width = 10, height = 6, dpi = 600)
 
@@ -117,6 +119,6 @@ ggplot(data = megabiome_shares, aes(x = name, y = value, fill = megabiome)) +
   geom_bar(stat = "identity", col = "black") +
   facet_grid(RCP ~ footprint) +
   xlab("Year") + ylab("Proportion of terrestrial area") +
-  scale_x_discrete(guide = guide_axis(angle = 90)) +
+  scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
 ggsave(paste0("figures/Megabiome area.pdf"), width = 10, height = 6, dpi = 600)
