@@ -35,7 +35,7 @@ for (k in 1:length(RCPs)){
     patches <- patches[[1]]
     names(patches) <- gsub("class_", "", names(patches))
   
-    for (j in 1:28){
+    for (j in 1:26){
       if (j %in% names(patches)){
         patch_count <- length(raster::unique(patches[[paste0(j)]]))
         patch_table[j,i] <- patch_count } else
@@ -45,20 +45,24 @@ for (k in 1:length(RCPs)){
 
   #Clean table
   colnames(patch_table) <- midpoints
-  patch_table$biomes <- seq(1, 28, 1)
-  #patch_table$labels <- conversion$V2
-  patch_table <- pivot_longer(patch_table, !biomes)
+  patch_table$biomes <- seq(1, 26, 1)
+  patch_table$labels <- conversion$V3[1:26]
+  patch_table <- pivot_longer(patch_table, !c(biomes, labels))
   patch_table$RCP <- RCPs[k]
   to_plot <- rbind(to_plot, patch_table)
 }
 
 to_plot$RCP <- gsub('/.*', '', to_plot$RCP)
-to_plot$biomes <- as.factor(to_plot$biomes)
+to_plot$labels <- factor(to_plot$labels,
+                              levels = conversion$V3[1:26])
+to_plot$name <- as.numeric(to_plot$name)
 
 #Plot
 ggplot(data = to_plot, aes(x = name, y = value,
-                                group = biomes, col = biomes)) +
+                                group = labels, col = labels)) +
   geom_line() +
   facet_wrap( ~ RCP, ncol = 3) +
   xlab("Year") + ylab("Number of patches") +
+  scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
+ggsave("figures/Patch_counts.pdf", width = 10, height = 6, dpi = 600)
