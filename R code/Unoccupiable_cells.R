@@ -115,17 +115,26 @@ for (m in 1:length(count_filenames)) {
   count_file <- read.csv(paste0("data/counts/", count_filenames[m], ".csv"))
   count_table <- rbind(count_table, count_file)
 }
-  
-count_table$Biome <- as.factor(count_table$Biome)
+
+#Read in biome conversion
+conversion <- read.table("data/biome_conversion.txt", sep = ",")
+
+count_table <- left_join(count_table, conversion, by = c("Biome" = "V1"))
+
+count_table$V3 <- factor(count_table$V3,
+                              levels = conversion$V3)
+
+count_table <- filter(count_table, Biome != "27")
+count_table <- filter(count_table, Biome != "28")
 
 #Plot
 ggplot(data = count_table, aes(x = Year, y = Proportion, group = File,
                                colour = File)) +
   geom_line() +
-  facet_wrap( ~ Biome, ncol = 7) +
-  scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
-                                 "cadetblue1", "cadetblue4", "cadetblue3", 
-                                 "gold", "gold4", "gold3")) +
+  facet_wrap( ~ V3, ncol = 7) +
+  scale_colour_manual(values = c("cadetblue1", "cadetblue4", "cadetblue3",
+                                 "gold", "gold4", "gold3",
+                                 "black", "grey70", "grey40")) +
   xlab("Year") + ylab("Proportion of biome cells not adjacent to those in previous time slice") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
