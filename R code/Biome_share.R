@@ -42,7 +42,7 @@ for (j in 1:length(filenames)){
   megabiomes <- na.omit(megabiomes)
 
   #Count the biomes in each time slice and convert to a proportion
-  change_area <- seq(1, 28, 1)
+  change_area <- seq(1, 26, 1)
   mega_area <- c("A", "B", "C", "D", "E", "F", "G", "H", "I")
 
   for (i in 1:length(slices)){
@@ -51,7 +51,7 @@ for (j in 1:length(filenames)){
   
     #Add up total area covered by each biome
     biome_areas <- c(); megabiome_areas <- c()
-    for (k in 1:28) {
+    for (k in 1:26) {
       one_biome <- filter(biomes, !!one_bin == k)
       biome_area <- sum(one_biome$area_km2)
       biome_areas[k] <- biome_area
@@ -106,14 +106,14 @@ megabiome_conversion <- distinct(conversion, V4, .keep_all = T)
 megabiome_shares <- left_join(megabiome_shares, megabiome_conversion, by = c("megabiome" = "V4"))
 
 biome_shares$V3 <- factor(biome_shares$V3,
-                              levels = conversion$V3)
+                              levels = conversion$V3[1:26])
 megabiome_shares$V5 <- factor(megabiome_shares$V5,
-                          levels = megabiome_conversion$V5)
+                          levels = megabiome_conversion$V5[1:26])
 
 #Plot results
 ggplot(data = biome_shares, aes(x = name, y = value, fill = V3)) +
   geom_bar(stat = "identity", col = "black") +
-  facet_grid(RCP ~ footprint) +
+  facet_grid(footprint ~ RCP) +
   xlab("Year") + ylab("Proportion of terrestrial area") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic() 
@@ -121,7 +121,7 @@ ggsave(paste0("figures/Biome area.pdf"), width = 10, height = 6, dpi = 600)
 
 ggplot(data = megabiome_shares, aes(x = name, y = value, fill = V5)) +
   geom_bar(stat = "identity", col = "black") +
-  facet_grid(RCP ~ footprint) +
+  facet_grid(footprint ~ RCP) +
   xlab("Year") + ylab("Proportion of terrestrial area") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
