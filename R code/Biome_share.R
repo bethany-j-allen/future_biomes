@@ -101,13 +101,17 @@ megabiome_shares$footprint <- factor(megabiome_shares$footprint,
                                  levels = c("all", "urban", "human"))
 
 #Convert biome numbers to labels
-#biome_shares <- left_join(biome_shares, conversion, by = c("biome" = "V1"))
-#conversion <- distinct(conversion, V3, .keep_all = T)
-#megabiome_shares <- left_join(megabiome_shares, conversion, by = c("megabiome" = "V3"))
-biome_shares$biome <- as.factor(biome_shares$biome)
+biome_shares <- left_join(biome_shares, conversion, by = c("biome" = "V1"))
+megabiome_conversion <- distinct(conversion, V4, .keep_all = T)
+megabiome_shares <- left_join(megabiome_shares, megabiome_conversion, by = c("megabiome" = "V4"))
+
+biome_shares$V3 <- factor(biome_shares$V3,
+                              levels = conversion$V3)
+megabiome_shares$V5 <- factor(megabiome_shares$V5,
+                          levels = megabiome_conversion$V5)
 
 #Plot results
-ggplot(data = biome_shares, aes(x = name, y = value, fill = biome)) +
+ggplot(data = biome_shares, aes(x = name, y = value, fill = V3)) +
   geom_bar(stat = "identity", col = "black") +
   facet_grid(RCP ~ footprint) +
   xlab("Year") + ylab("Proportion of terrestrial area") +
@@ -115,7 +119,7 @@ ggplot(data = biome_shares, aes(x = name, y = value, fill = biome)) +
   theme_classic() 
 ggsave(paste0("figures/Biome area.pdf"), width = 10, height = 6, dpi = 600)
 
-ggplot(data = megabiome_shares, aes(x = name, y = value, fill = megabiome)) +
+ggplot(data = megabiome_shares, aes(x = name, y = value, fill = V5)) +
   geom_bar(stat = "identity", col = "black") +
   facet_grid(RCP ~ footprint) +
   xlab("Year") + ylab("Proportion of terrestrial area") +
