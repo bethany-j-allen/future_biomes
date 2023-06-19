@@ -23,7 +23,7 @@ slices <- c("X2000.2019", "X2020.2039", "X2040.2059", "X2060.2079", "X2080.2099"
 midpoints <- seq(from = 2020, to = 2480, by = 20)
 
 #List biome labels, and load conversion table with full names
-biome_tags <- seq(1, 28, 1)
+biome_tags <- seq(1, 26, 1)
 megabiome_tags <- c("A", "B", "C", "D", "E", "F", "G", "H", "I")
 conversion <- read.table("data/biome_conversion.txt", sep = ",")
 
@@ -98,13 +98,21 @@ overlap_area_p_all <- pivot_longer(overlap_area_p_all, !c(biome, file))
 overlap_area_m_p_all <- pivot_longer(overlap_area_m_p_all, !c(megabiome, file))
 
 #Convert biome numbers to labels
-#overlap_area_all <- left_join(overlap_area_all, conversion, by = c("biome" = "V1"))
-#conversion_mega <- distinct(conversion, V3, .keep_all = T)
-#overlap_area_m_all <- left_join(overlap_area_m_all, conversion_mega, by = c("megabiome" = "V3"))
+overlap_area_all <- left_join(overlap_area_all, conversion, by = c("biome" = "V1"))
+conversion_mega <- distinct(conversion, V4, .keep_all = T)
+overlap_area_m_all <- left_join(overlap_area_m_all, conversion_mega, by = c("megabiome" = "V4"))
 
-#overlap_area_p_all <- left_join(overlap_area_p_all, conversion, by = c("biome" = "V1"))
-#overlap_area_m_p_all <- left_join(overlap_area_m_p_all, conversion_mega, by = c("megabiome" = "V3"))
+overlap_area_p_all <- left_join(overlap_area_p_all, conversion, by = c("biome" = "V1"))
+overlap_area_m_p_all <- left_join(overlap_area_m_p_all, conversion_mega, by = c("megabiome" = "V4"))
 
+overlap_area_all$V3 <- factor(overlap_area_all$V3,
+                              levels = conversion$V3)
+overlap_area_m_all$V5 <- factor(overlap_area_m_all$V5,
+                              levels = conversion_mega$V5)
+overlap_area_p_all$V3 <- factor(overlap_area_p_all$V3,
+                              levels = conversion$V3)
+overlap_area_m_p_all$V5 <- factor(overlap_area_m_p_all$V5,
+                                levels = conversion_mega$V5)
 overlap_area_all$name <- as.numeric(overlap_area_all$name)
 overlap_area_m_all$name <- as.numeric(overlap_area_m_all$name)
 overlap_area_p_all$name <- as.numeric(overlap_area_p_all$name)
@@ -113,10 +121,10 @@ overlap_area_m_p_all$name <- as.numeric(overlap_area_m_p_all$name)
 #Plot results
 ggplot(data = overlap_area_all, aes(x = name, y = value, group = file, colour = file)) +
   geom_line() +
-  facet_wrap( ~ biome, ncol = 7, labeller = label_wrap_gen(multi_line = T)) +
-  scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
-                                 "cadetblue1", "cadetblue4", "cadetblue3", 
-                                 "gold", "gold4", "gold3")) +
+  facet_wrap( ~ V3, ncol = 7) +
+  scale_colour_manual(values = c("cadetblue1", "cadetblue4", "cadetblue3",
+                                 "gold", "gold4", "gold3",
+                                 "black", "grey70", "grey40")) +
   xlab("Year") + ylab("Proportion of biome area overlapping with previous slice") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
@@ -124,10 +132,10 @@ ggsave("figures/Biome overlap previous.pdf", width = 10, height = 6, dpi = 600)
 
 ggplot(data = overlap_area_m_all, aes(x = name, y = value, group = file, colour = file)) +
   geom_line() +
-  facet_wrap( ~ megabiome, ncol = 3) +
-  scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
-                                 "cadetblue1", "cadetblue4", "cadetblue3", 
-                                 "gold", "gold4", "gold3")) +
+  facet_wrap( ~ V5, ncol = 3) +
+  scale_colour_manual(values = c("cadetblue1", "cadetblue4", "cadetblue3",
+                                 "gold", "gold4", "gold3",
+                                 "black", "grey70", "grey40")) +
   xlab("Year") + ylab("Proportion of megabiome area overlapping with previous slice") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
@@ -135,10 +143,10 @@ ggsave("figures/Megabiome overlap previous.pdf", width = 10, height = 6, dpi = 6
 
 ggplot(data = overlap_area_p_all, aes(x = name, y = value, group = file, colour = file)) +
   geom_line() +
-  facet_wrap( ~ biome, ncol = 7, labeller = label_wrap_gen(multi_line = T)) +
-  scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
-                                 "cadetblue1", "cadetblue4", "cadetblue3", 
-                                 "gold", "gold4", "gold3")) +
+  facet_wrap( ~ V3, ncol = 7) +
+  scale_colour_manual(values = c("cadetblue1", "cadetblue4", "cadetblue3",
+                                 "gold", "gold4", "gold3",
+                                 "black", "grey70", "grey40")) +
   xlab("Year") + ylab("Proportion of biome area overlapping with present day") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
@@ -146,10 +154,10 @@ ggsave("figures/Biome overlap present.pdf", width = 10, height = 6, dpi = 600)
 
 ggplot(data = overlap_area_m_p_all, aes(x = name, y = value, group = file, colour = file)) +
   geom_line() +
-  facet_wrap( ~ megabiome, ncol = 3) +
-  scale_colour_manual(values = c("firebrick1", "firebrick4", "firebrick3",
-                                 "cadetblue1", "cadetblue4", "cadetblue3", 
-                                 "gold", "gold4", "gold3")) +
+  facet_wrap( ~ V5, ncol = 3) +
+  scale_colour_manual(values = c("cadetblue1", "cadetblue4", "cadetblue3",
+                                 "gold", "gold4", "gold3",
+                                 "black", "grey70", "grey40")) +
   xlab("Year") + ylab("Proportion of megabiome area overlapping with present day") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
