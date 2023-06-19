@@ -1,8 +1,8 @@
 1,tropical evergreen broadleaf forest,TrEB,A,tropical forest
 2,tropical semi-evergreen broadleaf forest,TrSB,A,tropical forest
 3,tropical deciduous broadleaf forest & woodland,TrDB,A,tropical forest
-4,temperate deciduous broadleaf forest,TeDB,B,temperate forest
-5,temperate evergreen needleleaf forest,TeEN,B,temperate forest
+4,temperate deciduous broadleaf forest,TeDBF,B,temperate forest
+5,temperate evergreen needleleaf forest,TeENF,B,temperate forest
 6,warm-temperate evergreen broadleaf & mixed forest,WTeEB,C,warm-temperate forest
 7,cool mixed forest,CoM,B,temperate forest
 8,cool evergreen needleleaf forest,CoEN,B,temperate forest
@@ -13,8 +13,8 @@
 13,tropical xerophytic shrubland,TrX,F,grassland and dry shrubland
 14,temperate xerophytic shrubland,TeX,F,grassland and dry shrubland
 15,temperate sclerophyll woodland and shrubland,TeS,E,savanna and dry woodland
-16,temperate deciduous broadleaf savanna,TeDB,E,savanna and dry woodland
-17,temperate evergreen needleleaf open woodland,TeEN,E,savanna and dry woodland
+16,temperate deciduous broadleaf savanna,TeDBS,E,savanna and dry woodland
+17,temperate evergreen needleleaf open woodland,TeENW,E,savanna and dry woodland
 18,cold parkland,CdP,F,grassland and dry shrubland
 19,tropical grassland,TrG,F,grassland and dry shrubland
 20,temperate grassland,TeG,F,grassland and dry shrubland
