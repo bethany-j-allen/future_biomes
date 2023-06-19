@@ -129,8 +129,8 @@ conversion <- read.table("data/biome_conversion.txt", sep = ",")
 #Convert biomes into megabiomes
 mega_urban_table <- data.frame()
 mega_human_table <- data.frame()
-mega_urban_table <- as.data.frame(lapply(no_urban_df, function(x) conversion$V3[match(x, conversion$V1)]))
-mega_human_table <- as.data.frame(lapply(no_human_df, function(x) conversion$V3[match(x, conversion$V1)]))
+mega_urban_table <- as.data.frame(lapply(no_urban_df, function(x) conversion$V4[match(x, conversion$V1)]))
+mega_human_table <- as.data.frame(lapply(no_human_df, function(x) conversion$V4[match(x, conversion$V1)]))
 mega_urban_table[,1:3] <- no_urban_df[,1:3]
 mega_human_table[,1:3] <- no_human_df[,1:3]
 
