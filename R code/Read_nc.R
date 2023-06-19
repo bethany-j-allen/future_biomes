@@ -74,6 +74,10 @@ for (i in 1:length(slices)){
   colnames(biome_table)[(i + 3)] <- slices[i]
 }
 
+#Convert "barren" and "ice" values to NAs
+biome_table[biome_table == "27"] <- NA
+biome_table[biome_table == "28"] <- NA
+
 #Remove NA values
 biome_table <- na.omit(biome_table)
 
@@ -85,7 +89,7 @@ conversion <- read.table("data/biome_conversion.txt", sep = ",")
 
 #Convert biomes into megabiomes
 megabiome_table <- data.frame()
-megabiome_table <- as.data.frame(lapply(biome_table, function(x) conversion$V3[match(x, conversion$V1)]))
+megabiome_table <- as.data.frame(lapply(biome_table, function(x) conversion$V4[match(x, conversion$V1)]))
 megabiome_table[,1:3] <- biome_table[,1:3]
 
 #Write table
