@@ -73,29 +73,26 @@ biome_ranges$lat_min <- as.numeric(biome_ranges$lat_min)
 #Convert biome numbers to labels
 biome_ranges <- left_join(biome_ranges, conversion, by = c("biome" = "V1"))
 
-biome_ranges$V3 <- factor(biome_ranges$V3,
-                         levels = conversion$V3)
+biome_ranges$V3 <- factor(biome_ranges$V3, levels = conversion$V3)
 
 #Plot latitudes
-ggplot(data = biome_ranges) +
-  geom_ribbon(aes(x = slice, ymin = lat_min, ymax = lat_max, 
-                  group = hemisphere), alpha = 0.5) +
-  geom_line(aes(x = slice, y = lat_mid, group = hemisphere)) +
-  facet_wrap( ~ V3, ncol = 7) +
-  scale_x_continuous(guide = guide_axis(angle = 90)) +
-  xlab("Year") + ylab("Latitudinal range of biome") +
-  theme_classic()
-ggsave("figures/Biome latitudinal ranges.pdf", width = 10, height = 6, dpi = 600)
+#ggplot(data = biome_ranges) +
+#  geom_ribbon(aes(x = slice, ymin = lat_min, ymax = lat_max, 
+#                  group = hemisphere), alpha = 0.5) +
+#  geom_line(aes(x = slice, y = lat_mid, group = hemisphere)) +
+#  facet_wrap( ~ V3, ncol = 7) +
+#  scale_x_continuous(guide = guide_axis(angle = 90)) +
+#  xlab("Year") + ylab("Latitudinal range of biome") +
+#  theme_classic()
+#ggsave("figures/Biome latitudinal ranges.pdf", width = 10, height = 6, dpi = 600)
 
-#Plot centroid movement
-ggplot(data = biome_ranges) +
-  geom_point(aes(x = lon_mid, y = lat_mid, group = hemisphere, col = slice,
-                 size = 2, alpha = 0.5)) +
-  geom_hline(aes(yintercept = 0), colour = "black") +
-  facet_wrap( ~ V3, ncol = 7) +
-  xlab("Longitudinal midpoint of biome") + ylab("Latitudinal midpoint of biome") +
-  theme_classic()
-ggsave("figures/Biome centroid shifts.pdf", width = 10, height = 6, dpi = 600)
+#Save results
+ranges_to_save <- biome_ranges %>% rename(biome_label = V3) %>%
+  select(biome_label, slice, hemisphere, lon_max, lon_mid, lon_min,
+         lat_max, lat_mid, lat_min)
+write.csv(ranges_to_save, "data/ranges/RCP6_all.csv",
+          row.names = FALSE)
+
 
 centroid_shifts <- c()
 
@@ -113,39 +110,47 @@ for (m in 1:28){
 }
 
 centroid_shifts <- as.data.frame(centroid_shifts)
-colnames(centroid_shifts) <- c("biome", "year", "hemisphere", "distance", "bearing")
+colnames(centroid_shifts) <- c("biome", "slice", "hemisphere", "distance", "bearing")
+
 centroid_shifts$biome <- as.numeric(centroid_shifts$biome)
-centroid_shifts$year <- as.numeric(centroid_shifts$year)
+centroid_shifts$slice <- as.numeric(centroid_shifts$slice)
 centroid_shifts$distance <- as.numeric(centroid_shifts$distance)
 centroid_shifts$bearing <- as.numeric(centroid_shifts$bearing)
 
 centroid_shifts <- left_join(centroid_shifts, conversion, by = c("biome" = "V1"))
 
-centroid_shifts$V3 <- factor(centroid_shifts$V3,
-                          levels = conversion$V3)
+centroid_shifts$V3 <- factor(centroid_shifts$V3, levels = conversion$V3)
 
 #Plot distance moved by centroid
-ggplot(data = centroid_shifts, aes(x = year, y = distance, group = hemisphere,
-                                   col = hemisphere)) +
-  geom_line() +
-  facet_wrap( ~ V3, ncol = 7) +
-  scale_x_continuous(guide = guide_axis(angle = 90)) +
-  xlab("Year") + ylab("Distance moved by centroid (km2)") +
-  theme_classic()
+#ggplot(data = centroid_shifts, aes(x = slice, y = distance, group = hemisphere,
+#                                   col = hemisphere)) +
+#  geom_line() +
+#  facet_wrap( ~ V3, ncol = 7) +
+#  scale_x_continuous(guide = guide_axis(angle = 90)) +
+#  xlab("Year") + ylab("Distance moved by centroid (km2)") +
+#  theme_classic()
 
 #Plot bearing moved by centroid
-ggplot(data = centroid_shifts, aes(x = bearing, y = distance,
-                                   group = year, col = year)) +
-  geom_segment(aes(xend = bearing, yend = 0.1)) +
-  geom_point() +
-  facet_wrap( ~ V3, ncol = 7) +
-  scale_x_continuous(limits = c(-180, 180),
-                     breaks =  seq(-180, 180, 90)) +
+#ggplot(data = centroid_shifts, aes(x = bearing, y = distance,
+#                                   group = slice, col = slice)) +
+#  geom_segment(aes(xend = bearing, yend = 0.1)) +
+#  geom_point() +
+#  facet_wrap( ~ V3, ncol = 7) +
+#  scale_x_continuous(limits = c(-180, 180),
+#                     breaks =  seq(-180, 180, 90)) +
   #scale_y_log10() +
-  xlab("Bearing of centroid movement") + ylab("Distance moved by centroid (km2)") +
-  coord_polar(start = pi) +
-  theme_bw()
-ggsave("figures/Biome bearing of change.pdf", width = 10, height = 6, dpi = 600)
+#  xlab("Bearing of centroid movement") + ylab("Distance moved by centroid (km2)") +
+#  coord_polar(start = pi) +
+#  theme_bw()
+#ggsave("figures/Biome bearing of change.pdf", width = 10, height = 6, dpi = 600)
+
+#Save results
+centroids_to_save <- centroid_shifts %>% rename(biome_label = V3) %>%
+  select(biome_label, slice, hemisphere, distance, bearing)
+centroids_to_save$distance <- centroids_to_save$distance / 1000
+centroids_to_save <- rename(centroids_to_save, distance_km2 = distance)
+write.csv(centroids_to_save, "data/centroids/RCP6_all.csv",
+          row.names = FALSE)
 
 
 #Determine the megabiome centroids through time
@@ -202,24 +207,32 @@ conversion <- distinct(conversion, V4, .keep_all = T)
 megabiome_ranges <- left_join(megabiome_ranges, conversion, by = c("megabiome" = "V4"))
 
 #Plot latitudes
-ggplot(data = megabiome_ranges) +
-  geom_ribbon(aes(x = slice, ymin = lat_min, ymax = lat_max, 
-                  group = hemisphere), alpha = 0.5) +
-  geom_line(aes(x = slice, y = lat_mid, group = hemisphere)) +
-  facet_wrap( ~ V5, ncol = 3) +
-  xlab("Year") + ylab("Latitudinal range of biome") +
-  theme_classic()
-ggsave("figures/Megabiome latitudinal ranges.pdf", width = 10, height = 6, dpi = 600)
+#ggplot(data = megabiome_ranges) +
+#  geom_ribbon(aes(x = slice, ymin = lat_min, ymax = lat_max, 
+#                  group = hemisphere), alpha = 0.5) +
+#  geom_line(aes(x = slice, y = lat_mid, group = hemisphere)) +
+#  facet_wrap( ~ V5, ncol = 3) +
+#  xlab("Year") + ylab("Latitudinal range of biome") +
+#  theme_classic()
+#ggsave("figures/Megabiome latitudinal ranges.pdf", width = 10, height = 6, dpi = 600)
 
 #Plot centroid movement
-ggplot(data = megabiome_ranges) +
-  geom_point(aes(x = lon_mid, y = lat_mid, group = hemisphere, col = slice,
-                 size = 2, alpha = 0.5)) +
-  geom_hline(aes(yintercept = 0), colour = "black") +
-  facet_wrap( ~ V5, ncol = 3) +
-  xlab("Longitudinal midpoint of biome") + ylab("Latitudinal midpoint of biome") +
-  theme_classic()
-ggsave("figures/Megabiome centroid shifts.pdf", width = 10, height = 6, dpi = 600)
+#ggplot(data = megabiome_ranges) +
+#  geom_point(aes(x = lon_mid, y = lat_mid, group = hemisphere, col = slice,
+#                 size = 2, alpha = 0.5)) +
+#  geom_hline(aes(yintercept = 0), colour = "black") +
+#  facet_wrap( ~ V5, ncol = 3) +
+#  xlab("Longitudinal midpoint of biome") + ylab("Latitudinal midpoint of biome") +
+#  theme_classic()
+#ggsave("figures/Megabiome centroid shifts.pdf", width = 10, height = 6, dpi = 600)
+
+#Save results
+mega_ranges_to_save <- megabiome_ranges %>% rename(megabiome_label = V5) %>%
+  select(megabiome_label, slice, hemisphere, lon_max, lon_mid, lon_min,
+         lat_max, lat_mid, lat_min)
+write.csv(mega_ranges_to_save, "data/ranges/RCP6_mega_all.csv",
+          row.names = FALSE)
+
 
 mega_centroid_shifts <- c()
 
@@ -243,10 +256,10 @@ for (m in 1:28){
 }
 
 mega_centroid_shifts <- as.data.frame(mega_centroid_shifts)
-colnames(mega_centroid_shifts) <- c("megabiome", "year", "hemisphere", "distance",
+colnames(mega_centroid_shifts) <- c("megabiome", "slice", "hemisphere", "distance",
                                     "bearing")
 
-mega_centroid_shifts$year <- as.numeric(mega_centroid_shifts$year)
+mega_centroid_shifts$slice <- as.numeric(mega_centroid_shifts$slice)
 mega_centroid_shifts$distance <- as.numeric(mega_centroid_shifts$distance)
 mega_centroid_shifts$bearing <- as.numeric(mega_centroid_shifts$bearing)
 
@@ -254,22 +267,30 @@ mega_centroid_shifts <- left_join(mega_centroid_shifts, conversion,
                                   by = c("megabiome" = "V4"))
 
 #Plot distance moved by centroid
-ggplot(data = mega_centroid_shifts, aes(x = year, y = distance, group = hemisphere,
-                                   col = hemisphere)) +
-  geom_line() +
-  facet_wrap( ~ V5, ncol = 3) +
-  xlab("Year") + ylab("Distance moved by centroid (km2)") +
-  theme_classic()
+#ggplot(data = mega_centroid_shifts, aes(x = slice, y = distance, group = hemisphere,
+#                                   col = hemisphere)) +
+#  geom_line() +
+#  facet_wrap( ~ V5, ncol = 3) +
+#  xlab("Year") + ylab("Distance moved by centroid (km2)") +
+#  theme_classic()
 
 #Plot bearing moved by centroid
-ggplot(data = mega_centroid_shifts, aes(x = bearing, y = distance,
-                                   group = year, col = year)) +
-  geom_segment(aes(xend = bearing, yend = 0.1)) +
-  geom_point() +
-  facet_wrap( ~ V5, ncol = 3) +
-  scale_x_continuous(limits = c(-180, 180),
-                     breaks =  seq(-180, 180, 90)) +
+#ggplot(data = mega_centroid_shifts, aes(x = bearing, y = distance,
+#                                   group = year, col = year)) +
+#  geom_segment(aes(xend = bearing, yend = 0.1)) +
+#  geom_point() +
+#  facet_wrap( ~ V5, ncol = 3) +
+#  scale_x_continuous(limits = c(-180, 180),
+#                     breaks =  seq(-180, 180, 90)) +
   #scale_y_log10() +
-  xlab("Bearing of centroid movement") + ylab("Distance moved by centroid (km2)") +
-  coord_polar(start = pi) +
-  theme_bw()
+#  xlab("Bearing of centroid movement") + ylab("Distance moved by centroid (km2)") +
+#  coord_polar(start = pi) +
+#  theme_bw()
+
+#Save results
+mega_centroids_to_save <- mega_centroid_shifts %>% rename(megabiome_label = V5) %>%
+  select(megabiome_label, slice, hemisphere, distance, bearing)
+mega_centroids_to_save$distance <- mega_centroids_to_save$distance / 1000
+mega_centroids_to_save <- rename(mega_centroids_to_save, distance_km2 = distance)
+write.csv(mega_centroids_to_save, "data/centroids/RCP6_mega_all.csv",
+          row.names = FALSE)
