@@ -205,7 +205,7 @@ for (m in 1:3) {
                                 no_urban_high, no_urban_mid, no_urban_low,
                                 no_human_high, no_human_mid, no_human_low))
   lat_plot <- pivot_longer(lat_plot, !midpoints, names_to = "latitude")
-  lat_plot$RCP <- RCPs[m]
+  lat_plot$RCP <- paste0("RCP", RCPs[m])
   lat_plot$footprint <- sub('_[^_]*$', '', lat_plot$latitude)
   lat_plot$latitude <- sub(".*_", "", lat_plot$latitude)
   lat_plot_all <- rbind (lat_plot_all, lat_plot)
@@ -215,7 +215,7 @@ for (m in 1:3) {
                                   mega_no_human_high, mega_no_human_mid, mega_no_human_low))
   lat_plot_m <- pivot_longer(lat_plot_m, !midpoints, names_to = "latitude",
                          names_prefix = "mega_")
-  lat_plot_m$RCP <- RCPs[m]
+  lat_plot_m$RCP <- paste0("RCP", RCPs[m])
   lat_plot_m$footprint <- sub('_[^_]*$', '', lat_plot_m$latitude)
   lat_plot_m$latitude <- sub(".*_", "", lat_plot_m$latitude)
   mega_lat_plot_all <- rbind(mega_lat_plot_all, lat_plot_m)
@@ -434,7 +434,7 @@ for (m in 1:3) {
                                   no_urban_high, no_urban_mid, no_urban_low,
                                   no_human_high, no_human_mid, no_human_low))
   lat_plot <- pivot_longer(lat_plot, !midpoints, names_to = "latitude")
-  lat_plot$RCP <- RCPs[m]
+  lat_plot$RCP <- paste0("RCP", RCPs[m])
   lat_plot$footprint <- sub('_[^_]*$', '', lat_plot$latitude)
   lat_plot$latitude <- sub(".*_", "", lat_plot$latitude)
   lat_plot_all <- rbind (lat_plot_all, lat_plot)
@@ -444,7 +444,7 @@ for (m in 1:3) {
                                     mega_no_human_high, mega_no_human_mid, mega_no_human_low))
   lat_plot_m <- pivot_longer(lat_plot_m, !midpoints, names_to = "latitude",
                              names_prefix = "mega_")
-  lat_plot_m$RCP <- RCPs[m]
+  lat_plot_m$RCP <- paste0("RCP", RCPs[m])
   lat_plot_m$footprint <- sub('_[^_]*$', '', lat_plot_m$latitude)
   lat_plot_m$latitude <- sub(".*_", "", lat_plot_m$latitude)
   mega_lat_plot_all <- rbind(mega_lat_plot_all, lat_plot_m)
@@ -465,6 +465,7 @@ ggplot(data = lat_plot_all, aes(x = midpoints, y = value,
   facet_grid(latitude ~ RCP) +
   scale_colour_colorblind() +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing biome transitions between slices") +
+  scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
 ggsave(paste0("figures/Biome transitions from present by latitude.pdf"), width = 10, height = 6, dpi = 600)
 
@@ -474,5 +475,6 @@ ggplot(data = mega_lat_plot_all, aes(x = midpoints, y = value,
   facet_grid(latitude ~ RCP) +
   scale_colour_colorblind() +
   xlab("Year") + ylab("Proportion of terrestrial area undergoing megabiome transitions between slices") +
+  scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
 ggsave(paste0("figures/Megabiome transitions from present by latitude.pdf"), width = 10, height = 6, dpi = 600)
