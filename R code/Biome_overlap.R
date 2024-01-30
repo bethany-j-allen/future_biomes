@@ -3,6 +3,7 @@
 #  (area which was occupied by same biome in last slice)
 
 library(tidyverse)
+library(ggthemes)
 
 #List filenames
 filenames <- c("RCP2.6_all", "RCP2.6_no_urban", "RCP2.6_no_human",
@@ -97,6 +98,23 @@ overlap_area_m_all <- pivot_longer(overlap_area_m_all, !c(megabiome, file))
 overlap_area_p_all <- pivot_longer(overlap_area_p_all, !c(biome, file))
 overlap_area_m_p_all <- pivot_longer(overlap_area_m_p_all, !c(megabiome, file))
 
+#Split RCP and footprint labels
+overlap_area_all$RCP <- sub("_.*", "", overlap_area_all$file)
+overlap_area_all$footprint <- sub(".*_", "", overlap_area_all$file)
+overlap_area_all$name <- as.numeric(overlap_area_all$name)
+
+overlap_area_m_all$RCP <- sub("_.*", "", overlap_area_m_all$file)
+overlap_area_m_all$footprint <- sub(".*_", "", overlap_area_m_all$file)
+overlap_area_m_all$name <- as.numeric(overlap_area_m_all$name)
+
+overlap_area_p_all$RCP <- sub("_.*", "", overlap_area_p_all$file)
+overlap_area_p_all$footprint <- sub(".*_", "", overlap_area_p_all$file)
+overlap_area_p_all$name <- as.numeric(overlap_area_p_all$name)
+
+overlap_area_m_p_all$RCP <- sub("_.*", "", overlap_area_m_p_all$file)
+overlap_area_m_p_all$footprint <- sub(".*_", "", overlap_area_m_p_all$file)
+overlap_area_m_p_all$name <- as.numeric(overlap_area_m_p_all$name)
+
 #Convert biome numbers to labels
 overlap_area_all <- left_join(overlap_area_all, conversion, by = c("biome" = "V1"))
 conversion_mega <- distinct(conversion, V4, .keep_all = T)
@@ -113,51 +131,39 @@ overlap_area_p_all$V3 <- factor(overlap_area_p_all$V3,
                               levels = conversion$V3)
 overlap_area_m_p_all$V5 <- factor(overlap_area_m_p_all$V5,
                                 levels = conversion_mega$V5)
-overlap_area_all$name <- as.numeric(overlap_area_all$name)
-overlap_area_m_all$name <- as.numeric(overlap_area_m_all$name)
-overlap_area_p_all$name <- as.numeric(overlap_area_p_all$name)
-overlap_area_m_p_all$name <- as.numeric(overlap_area_m_p_all$name)
 
 #Plot results
-ggplot(data = overlap_area_all, aes(x = name, y = value, group = file, colour = file)) +
-  geom_line() +
+ggplot(data = overlap_area_all, aes(x = name, y = value)) +
+  geom_line(aes(linetype = RCP, colour = footprint)) +
   facet_wrap( ~ V3, ncol = 7) +
-  scale_colour_manual(values = c("cadetblue1", "cadetblue4", "cadetblue3",
-                                 "gold", "gold4", "gold3",
-                                 "black", "grey70", "grey40")) +
+  scale_colour_colorblind() +
   xlab("Year") + ylab("Proportion of biome area overlapping with previous slice") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
 ggsave("figures/Biome overlap previous.pdf", width = 10, height = 6, dpi = 600)
 
-ggplot(data = overlap_area_m_all, aes(x = name, y = value, group = file, colour = file)) +
-  geom_line() +
+ggplot(data = overlap_area_m_all, aes(x = name, y = value)) +
+  geom_line(aes(linetype = RCP, colour = footprint)) +
   facet_wrap( ~ V5, ncol = 3) +
-  scale_colour_manual(values = c("cadetblue1", "cadetblue4", "cadetblue3",
-                                 "gold", "gold4", "gold3",
-                                 "black", "grey70", "grey40")) +
+  scale_colour_colorblind() +
   xlab("Year") + ylab("Proportion of megabiome area overlapping with previous slice") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
 ggsave("figures/Megabiome overlap previous.pdf", width = 10, height = 6, dpi = 600)
 
-ggplot(data = overlap_area_p_all, aes(x = name, y = value, group = file, colour = file)) +
-  geom_line() +
+ggplot(data = overlap_area_p_all, aes(x = name, y = value)) +
+  geom_line(aes(linetype = RCP, colour = footprint)) +
   facet_wrap( ~ V3, ncol = 7) +
-  scale_colour_manual(values = c("cadetblue1", "cadetblue4", "cadetblue3",
-                                 "gold", "gold4", "gold3",
-                                 "black", "grey70", "grey40")) +
+  scale_colour_colorblind() +
   xlab("Year") + ylab("Proportion of biome area overlapping with present day") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
 ggsave("figures/Biome overlap present.pdf", width = 10, height = 6, dpi = 600)
 
-ggplot(data = overlap_area_m_p_all, aes(x = name, y = value, group = file, colour = file)) +
-  geom_line() +
+ggplot(data = overlap_area_m_p_all, aes(x = name, y = value)) +
+  geom_line(aes(linetype = RCP, colour = footprint)) +
   facet_wrap( ~ V5, ncol = 3) +
-  scale_colour_manual(values = c("cadetblue1", "cadetblue4", "cadetblue3",
-                                 "gold", "gold4", "gold3",
-                                 "black", "grey70", "grey40")) +
+  scale_colour_colorblind() +
   xlab("Year") + ylab("Proportion of megabiome area overlapping with present day") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
