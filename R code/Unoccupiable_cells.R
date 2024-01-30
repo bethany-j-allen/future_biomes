@@ -3,6 +3,7 @@
 # same biome in the previous time slice (making occupation difficult)
 
 library(tidyverse)
+library(ggthemes)
 
 #List filenames
 filenames <- c("RCP2.6_all", "RCP2.6_no_urban", "RCP2.6_no_human",
@@ -116,6 +117,10 @@ for (m in 1:length(count_filenames)) {
   count_table <- rbind(count_table, count_file)
 }
 
+#Split RCP and footprint labels
+count_table$RCP <- sub("_.*", "", count_table$File)
+count_table$Footprint <- sub(".*_", "", count_table$File)
+
 #Read in biome conversion
 conversion <- read.table("data/biome_conversion.txt", sep = ",")
 
@@ -128,13 +133,10 @@ count_table <- filter(count_table, Biome != "27")
 count_table <- filter(count_table, Biome != "28")
 
 #Plot
-ggplot(data = count_table, aes(x = Year, y = Proportion, group = File,
-                               colour = File)) +
-  geom_line() +
+ggplot(data = count_table, aes(x = Year, y = Proportion)) +
+  geom_line(aes(linetype = RCP, colour = Footprint)) +
   facet_wrap( ~ V3, ncol = 7) +
-  scale_colour_manual(values = c("cadetblue1", "cadetblue4", "cadetblue3",
-                                 "gold", "gold4", "gold3",
-                                 "black", "grey70", "grey40")) +
+  scale_colour_colorblind() +
   xlab("Year") + ylab("Proportion of biome cells not adjacent to those in previous time slice") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
