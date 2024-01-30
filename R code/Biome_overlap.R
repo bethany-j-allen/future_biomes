@@ -155,7 +155,7 @@ ggplot(data = overlap_area_p_all, aes(x = name, y = value)) +
   geom_line(aes(linetype = RCP, colour = footprint)) +
   facet_wrap( ~ V3, ncol = 7) +
   scale_colour_colorblind() +
-  xlab("Year") + ylab("Proportion of biome area overlapping with present day") +
+  xlab("Year") + ylab("Proportion of biome area overlapping with 2000-2020") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
 ggsave("figures/Biome overlap present.pdf", width = 10, height = 6, dpi = 600)
@@ -164,7 +164,7 @@ ggplot(data = overlap_area_m_p_all, aes(x = name, y = value)) +
   geom_line(aes(linetype = RCP, colour = footprint)) +
   facet_wrap( ~ V5, ncol = 3) +
   scale_colour_colorblind() +
-  xlab("Year") + ylab("Proportion of megabiome area overlapping with present day") +
+  xlab("Year") + ylab("Proportion of megabiome area overlapping with 2000-2020") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
 ggsave("figures/Megabiome overlap present.pdf", width = 10, height = 6, dpi = 600)

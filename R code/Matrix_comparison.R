@@ -464,7 +464,7 @@ ggplot(data = lat_plot_all, aes(x = midpoints, y = value,
   geom_line() +
   facet_grid(latitude ~ RCP) +
   scale_colour_colorblind() +
-  xlab("Year") + ylab("Proportion of terrestrial area undergoing biome transitions between slices") +
+  xlab("Year") + ylab("Proportion of terrestrial area overlapping with 2000-2020") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
 ggsave(paste0("figures/Biome transitions from present by latitude.pdf"), width = 10, height = 6, dpi = 600)
@@ -474,7 +474,7 @@ ggplot(data = mega_lat_plot_all, aes(x = midpoints, y = value,
   geom_line() +
   facet_grid(latitude ~ RCP) +
   scale_colour_colorblind() +
-  xlab("Year") + ylab("Proportion of terrestrial area undergoing megabiome transitions between slices") +
+  xlab("Year") + ylab("Proportion of terrestrial area overlapping with 2000-2020") +
   scale_x_continuous(guide = guide_axis(angle = 90)) +
   theme_classic()
 ggsave(paste0("figures/Megabiome transitions from present by latitude.pdf"), width = 10, height = 6, dpi = 600)
