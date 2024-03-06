@@ -157,14 +157,18 @@ for (m in 1:3) {
   low_lat_m_no_urban <- na.omit(low_lat_m_no_urban)
   low_lat_m_no_human <- na.omit(low_lat_m_no_human)
   
-  #Calculate area for each latitude band (low versus high res)
-  high_lat_area_lr <- sum(high_lat_all$area_km2)
-  mid_lat_area_lr <- sum(mid_lat_all$area_km2)
-  low_lat_area_lr <- sum(low_lat_all$area_km2)
+  #Calculate area for each latitude band
+  high_lat_area_all <- sum(high_lat_all$area_km2)
+  mid_lat_area_all <- sum(mid_lat_all$area_km2)
+  low_lat_area_all <- sum(low_lat_all$area_km2)
   
-  high_lat_area_hr <- sum(high_lat_no_urban$area_km2)
-  mid_lat_area_hr <- sum(mid_lat_no_urban$area_km2)
-  low_lat_area_hr <- sum(low_lat_no_urban$area_km2)
+  high_lat_area_urban <- sum(high_lat_no_urban$area_km2)
+  mid_lat_area_urban <- sum(mid_lat_no_urban$area_km2)
+  low_lat_area_urban <- sum(low_lat_no_urban$area_km2)
+  
+  high_lat_area_human <- sum(high_lat_no_human$area_km2)
+  mid_lat_area_human <- sum(mid_lat_no_human$area_km2)
+  low_lat_area_human <- sum(low_lat_no_human$area_km2)
 
   #Count the biome changes between adjacent time slices
   all_high <- c(); all_mid <- c(); all_low <- c()
@@ -175,29 +179,29 @@ for (m in 1:3) {
   mega_no_human_high <- c(); mega_no_human_mid <- c(); mega_no_human_low <- c()
 
   for (j in 1:(length(slices) - 1)) {
-    all_high[j] <- sum(high_lat_all[which(high_lat_all[,j+3] != high_lat_all[,j+4]), 3]) / high_lat_area_lr
-    no_urban_high[j] <- sum(high_lat_no_urban[which(high_lat_no_urban[,j+3] != high_lat_no_urban[,j+4]), 3]) / high_lat_area_hr
-    no_human_high[j] <- sum(high_lat_no_human[which(high_lat_no_human[,j+3] != high_lat_no_human[,j+4]), 3]) / high_lat_area_hr
+    all_high[j] <- sum(high_lat_all[which(high_lat_all[,j+3] != high_lat_all[,j+4]), 3]) / high_lat_area_all
+    no_urban_high[j] <- sum(high_lat_no_urban[which(high_lat_no_urban[,j+3] != high_lat_no_urban[,j+4]), 3]) / high_lat_area_urban
+    no_human_high[j] <- sum(high_lat_no_human[which(high_lat_no_human[,j+3] != high_lat_no_human[,j+4]), 3]) / high_lat_area_human
   
-    all_mid[j] <- sum(mid_lat_all[which(mid_lat_all[,j+3] != mid_lat_all[,j+4]), 3]) / mid_lat_area_lr
-    no_urban_mid[j] <- sum(mid_lat_no_urban[which(mid_lat_no_urban[,j+3] != mid_lat_no_urban[,j+4]), 3]) / mid_lat_area_hr
-    no_human_mid[j] <- sum(mid_lat_no_human[which(mid_lat_no_human[,j+3] != mid_lat_no_human[,j+4]), 3]) / mid_lat_area_hr
+    all_mid[j] <- sum(mid_lat_all[which(mid_lat_all[,j+3] != mid_lat_all[,j+4]), 3]) / mid_lat_area_all
+    no_urban_mid[j] <- sum(mid_lat_no_urban[which(mid_lat_no_urban[,j+3] != mid_lat_no_urban[,j+4]), 3]) / mid_lat_area_urban
+    no_human_mid[j] <- sum(mid_lat_no_human[which(mid_lat_no_human[,j+3] != mid_lat_no_human[,j+4]), 3]) / mid_lat_area_human
   
-    all_low[j] <- sum(low_lat_all[which(low_lat_all[,j+3] != low_lat_all[,j+4]), 3]) / low_lat_area_lr
-    no_urban_low[j] <- sum(low_lat_no_urban[which(low_lat_no_urban[,j+3] != low_lat_no_urban[,j+4]), 3]) / low_lat_area_hr
-    no_human_low[j] <- sum(low_lat_no_human[which(low_lat_no_human[,j+3] != low_lat_no_human[,j+4]), 3]) / low_lat_area_hr
+    all_low[j] <- sum(low_lat_all[which(low_lat_all[,j+3] != low_lat_all[,j+4]), 3]) / low_lat_area_all
+    no_urban_low[j] <- sum(low_lat_no_urban[which(low_lat_no_urban[,j+3] != low_lat_no_urban[,j+4]), 3]) / low_lat_area_urban
+    no_human_low[j] <- sum(low_lat_no_human[which(low_lat_no_human[,j+3] != low_lat_no_human[,j+4]), 3]) / low_lat_area_human
   
-    mega_all_high[j] <- sum(high_lat_m_all[which(high_lat_m_all[,j+3] != high_lat_m_all[,j+4]), 3]) / high_lat_area_lr
-    mega_no_urban_high[j] <- sum(high_lat_m_no_urban[which(high_lat_m_no_urban[,j+3] != high_lat_m_no_urban[,j+4]), 3]) / high_lat_area_hr
-    mega_no_human_high[j] <- sum(high_lat_m_no_human[which(high_lat_m_no_human[,j+3] != high_lat_m_no_human[,j+4]), 3]) / high_lat_area_hr
+    mega_all_high[j] <- sum(high_lat_m_all[which(high_lat_m_all[,j+3] != high_lat_m_all[,j+4]), 3]) / high_lat_area_all
+    mega_no_urban_high[j] <- sum(high_lat_m_no_urban[which(high_lat_m_no_urban[,j+3] != high_lat_m_no_urban[,j+4]), 3]) / high_lat_area_urban
+    mega_no_human_high[j] <- sum(high_lat_m_no_human[which(high_lat_m_no_human[,j+3] != high_lat_m_no_human[,j+4]), 3]) / high_lat_area_human
   
-    mega_all_mid[j] <- sum(mid_lat_m_all[which(mid_lat_m_all[,j+3] != mid_lat_m_all[,j+4]), 3]) / mid_lat_area_lr
-    mega_no_urban_mid[j] <- sum(mid_lat_m_no_urban[which(mid_lat_m_no_urban[,j+3] != mid_lat_m_no_urban[,j+4]), 3]) / mid_lat_area_hr
-    mega_no_human_mid[j] <- sum(mid_lat_m_no_human[which(mid_lat_m_no_human[,j+3] != mid_lat_m_no_human[,j+4]), 3]) / mid_lat_area_hr
+    mega_all_mid[j] <- sum(mid_lat_m_all[which(mid_lat_m_all[,j+3] != mid_lat_m_all[,j+4]), 3]) / mid_lat_area_all
+    mega_no_urban_mid[j] <- sum(mid_lat_m_no_urban[which(mid_lat_m_no_urban[,j+3] != mid_lat_m_no_urban[,j+4]), 3]) / mid_lat_area_urban
+    mega_no_human_mid[j] <- sum(mid_lat_m_no_human[which(mid_lat_m_no_human[,j+3] != mid_lat_m_no_human[,j+4]), 3]) / mid_lat_area_human
   
-    mega_all_low[j] <- sum(low_lat_m_all[which(low_lat_m_all[,j+3] != low_lat_m_all[,j+4]), 3]) / low_lat_area_lr
-    mega_no_urban_low[j] <- sum(low_lat_m_no_urban[which(low_lat_m_no_urban[,j+3] != low_lat_m_no_urban[,j+4]), 3]) / low_lat_area_hr
-    mega_no_human_low[j] <- sum(low_lat_m_no_human[which(low_lat_m_no_human[,j+3] != low_lat_m_no_human[,j+4]), 3]) / low_lat_area_hr
+    mega_all_low[j] <- sum(low_lat_m_all[which(low_lat_m_all[,j+3] != low_lat_m_all[,j+4]), 3]) / low_lat_area_all
+    mega_no_urban_low[j] <- sum(low_lat_m_no_urban[which(low_lat_m_no_urban[,j+3] != low_lat_m_no_urban[,j+4]), 3]) / low_lat_area_urban
+    mega_no_human_low[j] <- sum(low_lat_m_no_human[which(low_lat_m_no_human[,j+3] != low_lat_m_no_human[,j+4]), 3]) / low_lat_area_human
   }
 
   #Add slice midpoints to plot against
@@ -386,14 +390,18 @@ for (m in 1:3) {
   low_lat_m_no_urban <- na.omit(low_lat_m_no_urban)
   low_lat_m_no_human <- na.omit(low_lat_m_no_human)
   
-  #Calculate area for each latitude band (low versus high res)
-  high_lat_area_lr <- sum(high_lat_all$area_km2)
-  mid_lat_area_lr <- sum(mid_lat_all$area_km2)
-  low_lat_area_lr <- sum(low_lat_all$area_km2)
+  #Calculate area for each latitude band
+  high_lat_area_all <- sum(high_lat_all$area_km2)
+  mid_lat_area_all <- sum(mid_lat_all$area_km2)
+  low_lat_area_all <- sum(low_lat_all$area_km2)
   
-  high_lat_area_hr <- sum(high_lat_no_urban$area_km2)
-  mid_lat_area_hr <- sum(mid_lat_no_urban$area_km2)
-  low_lat_area_hr <- sum(low_lat_no_urban$area_km2)
+  high_lat_area_urban <- sum(high_lat_no_urban$area_km2)
+  mid_lat_area_urban <- sum(mid_lat_no_urban$area_km2)
+  low_lat_area_urban <- sum(low_lat_no_urban$area_km2)
+  
+  high_lat_area_human <- sum(high_lat_no_human$area_km2)
+  mid_lat_area_human <- sum(mid_lat_no_human$area_km2)
+  low_lat_area_human <- sum(low_lat_no_human$area_km2)
 
   #Count the biome changes between adjacent time slices
   all_high <- c(); all_mid <- c(); all_low <- c()
@@ -404,29 +412,29 @@ for (m in 1:3) {
   mega_no_human_high <- c(); mega_no_human_mid <- c(); mega_no_human_low <- c()
 
   for (j in 1:(length(slices)-1)){
-    all_high[j] <- sum(high_lat_all[which(high_lat_all[,4] != high_lat_all[,j+4]), 3]) / high_lat_area_lr
-    no_urban_high[j] <- sum(high_lat_no_urban[which(high_lat_no_urban[,4] != high_lat_no_urban[,j+4]), 3]) / high_lat_area_hr
-    no_human_high[j] <- sum(high_lat_no_human[which(high_lat_no_human[,4] != high_lat_no_human[,j+4]), 3]) / high_lat_area_hr
+    all_high[j] <- sum(high_lat_all[which(high_lat_all[,4] != high_lat_all[,j+4]), 3]) / high_lat_area_all
+    no_urban_high[j] <- sum(high_lat_no_urban[which(high_lat_no_urban[,4] != high_lat_no_urban[,j+4]), 3]) / high_lat_area_urban
+    no_human_high[j] <- sum(high_lat_no_human[which(high_lat_no_human[,4] != high_lat_no_human[,j+4]), 3]) / high_lat_area_human
   
-    all_mid[j] <- sum(mid_lat_all[which(mid_lat_all[,4] != mid_lat_all[,j+4]), 3]) / mid_lat_area_lr
-    no_urban_mid[j] <- sum(mid_lat_no_urban[which(mid_lat_no_urban[,4] != mid_lat_no_urban[,j+4]), 3]) / mid_lat_area_hr
-    no_human_mid[j] <- sum(mid_lat_no_human[which(mid_lat_no_human[,4] != mid_lat_no_human[,j+4]), 3]) / mid_lat_area_hr
+    all_mid[j] <- sum(mid_lat_all[which(mid_lat_all[,4] != mid_lat_all[,j+4]), 3]) / mid_lat_area_all
+    no_urban_mid[j] <- sum(mid_lat_no_urban[which(mid_lat_no_urban[,4] != mid_lat_no_urban[,j+4]), 3]) / mid_lat_area_urban
+    no_human_mid[j] <- sum(mid_lat_no_human[which(mid_lat_no_human[,4] != mid_lat_no_human[,j+4]), 3]) / mid_lat_area_human
   
-    all_low[j] <- sum(low_lat_all[which(low_lat_all[,4] != low_lat_all[,j+4]), 3]) / low_lat_area_lr
-    no_urban_low[j] <- sum(low_lat_no_urban[which(low_lat_no_urban[,4] != low_lat_no_urban[,j+4]), 3]) / low_lat_area_hr
-    no_human_low[j] <- sum(low_lat_no_human[which(low_lat_no_human[,4] != low_lat_no_human[,j+4]), 3]) / low_lat_area_hr
+    all_low[j] <- sum(low_lat_all[which(low_lat_all[,4] != low_lat_all[,j+4]), 3]) / low_lat_area_all
+    no_urban_low[j] <- sum(low_lat_no_urban[which(low_lat_no_urban[,4] != low_lat_no_urban[,j+4]), 3]) / low_lat_area_urban
+    no_human_low[j] <- sum(low_lat_no_human[which(low_lat_no_human[,4] != low_lat_no_human[,j+4]), 3]) / low_lat_area_human
   
-    mega_all_high[j] <- sum(high_lat_m_all[which(high_lat_m_all[,4] != high_lat_m_all[,j+4]), 3]) / high_lat_area_lr
-    mega_no_urban_high[j] <- sum(high_lat_m_no_urban[which(high_lat_m_no_urban[,4] != high_lat_m_no_urban[,j+4]), 3]) / high_lat_area_hr
-    mega_no_human_high[j] <- sum(high_lat_m_no_human[which(high_lat_m_no_human[,4] != high_lat_m_no_human[,j+4]), 3]) / high_lat_area_hr
+    mega_all_high[j] <- sum(high_lat_m_all[which(high_lat_m_all[,4] != high_lat_m_all[,j+4]), 3]) / high_lat_area_all
+    mega_no_urban_high[j] <- sum(high_lat_m_no_urban[which(high_lat_m_no_urban[,4] != high_lat_m_no_urban[,j+4]), 3]) / high_lat_area_urban
+    mega_no_human_high[j] <- sum(high_lat_m_no_human[which(high_lat_m_no_human[,4] != high_lat_m_no_human[,j+4]), 3]) / high_lat_area_human
   
-    mega_all_mid[j] <- sum(mid_lat_m_all[which(mid_lat_m_all[,4] != mid_lat_m_all[,j+4]), 3]) / mid_lat_area_lr
-    mega_no_urban_mid[j] <- sum(mid_lat_m_no_urban[which(mid_lat_m_no_urban[,4] != mid_lat_m_no_urban[,j+4]), 3]) / mid_lat_area_hr
-    mega_no_human_mid[j] <- sum(mid_lat_m_no_human[which(mid_lat_m_no_human[,4] != mid_lat_m_no_human[,j+4]), 3]) / mid_lat_area_hr
+    mega_all_mid[j] <- sum(mid_lat_m_all[which(mid_lat_m_all[,4] != mid_lat_m_all[,j+4]), 3]) / mid_lat_area_all
+    mega_no_urban_mid[j] <- sum(mid_lat_m_no_urban[which(mid_lat_m_no_urban[,4] != mid_lat_m_no_urban[,j+4]), 3]) / mid_lat_area_urban
+    mega_no_human_mid[j] <- sum(mid_lat_m_no_human[which(mid_lat_m_no_human[,4] != mid_lat_m_no_human[,j+4]), 3]) / mid_lat_area_human
   
-    mega_all_low[j] <- sum(low_lat_m_all[which(low_lat_m_all[,4] != low_lat_m_all[,j+4]), 3]) / low_lat_area_lr
-    mega_no_urban_low[j] <- sum(low_lat_m_no_urban[which(low_lat_m_no_urban[,4] != low_lat_m_no_urban[,j+4]), 3]) / low_lat_area_hr
-    mega_no_human_low[j] <- sum(low_lat_m_no_human[which(low_lat_m_no_human[,4] != low_lat_m_no_human[,j+4]), 3]) / low_lat_area_hr
+    mega_all_low[j] <- sum(low_lat_m_all[which(low_lat_m_all[,4] != low_lat_m_all[,j+4]), 3]) / low_lat_area_all
+    mega_no_urban_low[j] <- sum(low_lat_m_no_urban[which(low_lat_m_no_urban[,4] != low_lat_m_no_urban[,j+4]), 3]) / low_lat_area_urban
+    mega_no_human_low[j] <- sum(low_lat_m_no_human[which(low_lat_m_no_human[,4] != low_lat_m_no_human[,j+4]), 3]) / low_lat_area_human
   }
 
   #Add slice midpoints to plot against
