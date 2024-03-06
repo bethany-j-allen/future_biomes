@@ -32,12 +32,12 @@ for (k in 1:length(filenames)){
   biomes <- read.csv(paste0("data/cleaned/", filenames[k], ".csv"))
   megabiomes <- read.csv(paste0("data/cleaned/", mega_filenames[k], ".csv"))
   
-  #Add up total terrestrial area included
-  total_area <- sum(biomes$area_km2)
-  
   #Remove NAs (needed for no_urban and no_human)
   biomes <- na.omit(biomes)
   megabiomes <- na.omit(megabiomes)
+  
+  #Add up total terrestrial area included
+  total_area <- sum(biomes$area_km2)
 
   #Count the biome changes between adjacent time slices, and normalise
   change_area <- c(); mega_area <- c()
