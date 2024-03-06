@@ -141,15 +141,6 @@ for (m in 1:3) {
   low_lat_m_no_urban <- filter(megabiomes_no_urban, between(lat, -30, 30))
   low_lat_m_no_human <- filter(megabiomes_no_human, between(lat, -30, 30))
 
-  #Calculate area for each latitude band (low versus high res)
-  high_lat_area_lr <- sum(high_lat_all$area_km2)
-  mid_lat_area_lr <- sum(mid_lat_all$area_km2)
-  low_lat_area_lr <- sum(low_lat_all$area_km2)
-
-  high_lat_area_hr <- sum(high_lat_no_urban$area_km2)
-  mid_lat_area_hr <- sum(mid_lat_no_urban$area_km2)
-  low_lat_area_hr <- sum(low_lat_no_urban$area_km2)
-
   #Remove NAs from no_human and no_urban
   high_lat_no_urban <- na.omit(high_lat_no_urban)
   high_lat_no_human <- na.omit(high_lat_no_human)
@@ -165,6 +156,15 @@ for (m in 1:3) {
   low_lat_no_human <- na.omit(low_lat_no_human)
   low_lat_m_no_urban <- na.omit(low_lat_m_no_urban)
   low_lat_m_no_human <- na.omit(low_lat_m_no_human)
+  
+  #Calculate area for each latitude band (low versus high res)
+  high_lat_area_lr <- sum(high_lat_all$area_km2)
+  mid_lat_area_lr <- sum(mid_lat_all$area_km2)
+  low_lat_area_lr <- sum(low_lat_all$area_km2)
+  
+  high_lat_area_hr <- sum(high_lat_no_urban$area_km2)
+  mid_lat_area_hr <- sum(mid_lat_no_urban$area_km2)
+  low_lat_area_hr <- sum(low_lat_no_urban$area_km2)
 
   #Count the biome changes between adjacent time slices
   all_high <- c(); all_mid <- c(); all_low <- c()
@@ -370,15 +370,6 @@ for (m in 1:3) {
   low_lat_m_no_urban <- filter(megabiomes_no_urban, between(lat, -30, 30))
   low_lat_m_no_human <- filter(megabiomes_no_human, between(lat, -30, 30))
 
-  #Calculate area for each latitude band (low versus high res)
-  high_lat_area_lr <- sum(high_lat_all$area_km2)
-  mid_lat_area_lr <- sum(mid_lat_all$area_km2)
-  low_lat_area_lr <- sum(low_lat_all$area_km2)
-
-  high_lat_area_hr <- sum(high_lat_no_urban$area_km2)
-  mid_lat_area_hr <- sum(mid_lat_no_urban$area_km2)
-  low_lat_area_hr <- sum(low_lat_no_urban$area_km2)
-
   #Remove NAs from no_human and no_urban
   high_lat_no_urban <- na.omit(high_lat_no_urban)
   high_lat_no_human <- na.omit(high_lat_no_human)
@@ -394,6 +385,15 @@ for (m in 1:3) {
   low_lat_no_human <- na.omit(low_lat_no_human)
   low_lat_m_no_urban <- na.omit(low_lat_m_no_urban)
   low_lat_m_no_human <- na.omit(low_lat_m_no_human)
+  
+  #Calculate area for each latitude band (low versus high res)
+  high_lat_area_lr <- sum(high_lat_all$area_km2)
+  mid_lat_area_lr <- sum(mid_lat_all$area_km2)
+  low_lat_area_lr <- sum(low_lat_all$area_km2)
+  
+  high_lat_area_hr <- sum(high_lat_no_urban$area_km2)
+  mid_lat_area_hr <- sum(mid_lat_no_urban$area_km2)
+  low_lat_area_hr <- sum(low_lat_no_urban$area_km2)
 
   #Count the biome changes between adjacent time slices
   all_high <- c(); all_mid <- c(); all_low <- c()
