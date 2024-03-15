@@ -76,15 +76,15 @@ biome_ranges <- left_join(biome_ranges, conversion, by = c("biome" = "V1"))
 biome_ranges$V3 <- factor(biome_ranges$V3, levels = conversion$V3)
 
 #Plot latitudes
-#ggplot(data = biome_ranges) +
-#  geom_ribbon(aes(x = slice, ymin = lat_min, ymax = lat_max, 
-#                  group = hemisphere), alpha = 0.5) +
-#  geom_line(aes(x = slice, y = lat_mid, group = hemisphere)) +
-#  facet_wrap( ~ V3, ncol = 7) +
-#  scale_x_continuous(guide = guide_axis(angle = 90)) +
-#  xlab("Year") + ylab("Latitudinal range of biome") +
-#  theme_classic()
-#ggsave("figures/Biome latitudinal ranges.pdf", width = 10, height = 6, dpi = 600)
+ggplot(data = biome_ranges) +
+  geom_ribbon(aes(x = slice, ymin = lat_min, ymax = lat_max, 
+                  group = hemisphere), alpha = 0.5) +
+  geom_line(aes(x = slice, y = lat_mid, group = hemisphere)) +
+  facet_wrap( ~ V3, ncol = 7) +
+  scale_x_continuous(guide = guide_axis(angle = 90)) +
+  xlab("Year") + ylab("Latitudinal range of biome") +
+  theme_classic()
+ggsave("figures/Biome latitudinal ranges.pdf", width = 10, height = 6, dpi = 600)
 
 #Save results
 ranges_to_save <- biome_ranges %>% rename(biome_label = V3) %>%
@@ -207,14 +207,14 @@ conversion <- distinct(conversion, V4, .keep_all = T)
 megabiome_ranges <- left_join(megabiome_ranges, conversion, by = c("megabiome" = "V4"))
 
 #Plot latitudes
-#ggplot(data = megabiome_ranges) +
-#  geom_ribbon(aes(x = slice, ymin = lat_min, ymax = lat_max, 
-#                  group = hemisphere), alpha = 0.5) +
-#  geom_line(aes(x = slice, y = lat_mid, group = hemisphere)) +
-#  facet_wrap( ~ V5, ncol = 3) +
-#  xlab("Year") + ylab("Latitudinal range of biome") +
-#  theme_classic()
-#ggsave("figures/Megabiome latitudinal ranges.pdf", width = 10, height = 6, dpi = 600)
+ggplot(data = megabiome_ranges) +
+  geom_ribbon(aes(x = slice, ymin = lat_min, ymax = lat_max, 
+                  group = hemisphere), alpha = 0.5) +
+  geom_line(aes(x = slice, y = lat_mid, group = hemisphere)) +
+  facet_wrap( ~ V5, ncol = 3) +
+  xlab("Year") + ylab("Latitudinal range of biome") +
+  theme_classic()
+ggsave("figures/Megabiome latitudinal ranges.pdf", width = 10, height = 6, dpi = 600)
 
 #Plot centroid movement
 #ggplot(data = megabiome_ranges) +
