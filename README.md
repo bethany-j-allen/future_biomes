@@ -1,6 +1,8 @@
 # future_biomes
 This repository contains the code associated with Allen BJ, Hill DJ, Burke AM, Clark M, Marchant R, Stringer LC, Williams DR, Lyon C (2024) Projected future climatic forcing on the global distribution of vegetation types, Philosophical Transactions of the Royal Society B, in press.
 
+The data associated with this paper can be downloaded from the Zenodo repository: https://dx.doi.org/10.5281/zenodo.10820536
+
 ## Description of files
 
 /data/biome_conversion.txt
